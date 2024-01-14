@@ -25,12 +25,17 @@
 .login-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
+
 
   .other-select {
     display: flex;
     justify-content: space-between;
   }
+}
+
+.arco-btn-size-medium {
+  border-radius: 8px;
 }
 
 .arco-input-wrapper {

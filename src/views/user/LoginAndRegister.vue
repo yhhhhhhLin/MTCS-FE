@@ -2,16 +2,20 @@
   <div class="login-register-page">
     <div class="login-register-box">
       <div class="login-title">
-        <img src="../../assets/vue.svg" alt="logo">
+        <img src="../../assets/logo.svg" alt="logo">
         这里是logo和文字描述
       </div>
       <div class="select-from">
         <a-tabs default-active-key="1">
           <a-tab-pane key="1" title="账号密码登录">
-            <LoginForm></LoginForm>
+            <div class="form">
+              <LoginForm></LoginForm>
+            </div>
           </a-tab-pane>
           <a-tab-pane key="2" title="注册账号">
-            <RegisterFrom></RegisterFrom>
+            <div class="form">
+              <RegisterFrom></RegisterFrom>
+            </div>
           </a-tab-pane>
         </a-tabs>
       </div>
@@ -35,21 +39,27 @@ import RegisterFrom from "../../components/RegisterFrom.vue";
 
 
   .login-register-box {
+    border-radius: 10px;
+    box-shadow: 50px 50px 50px 50px rgba(0, 0, 0, 0.06);
     width: 450px;
     height: 70vh;
     display: flex;
     gap: 30px;
-    background-color: azure;
+    background-color: aliceblue;
     flex-direction: column;
     justify-content: center;
     align-items: center;
 
     .select-from {
       width: 300px;
+      .form{
+        margin-top: 15px;
+      }
 
     }
 
   }
 }
+
 
 </style>

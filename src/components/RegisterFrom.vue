@@ -35,11 +35,19 @@
 .register-form {
   display: flex;
   flex-direction: column;
-  gap: 20px;
+  gap: 30px;
 
+}
+
+.arco-btn-size-medium{
+  border-radius: 8px;
 }
 
 .arco-input-wrapper {
   border-radius: 8px;
+}
+
+.arco-tabs-content{
+  padding-top: 30px;
 }
 </style>
