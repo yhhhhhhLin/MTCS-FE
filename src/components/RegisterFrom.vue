@@ -1,5 +1,5 @@
 <template>
-  <div class="login-form">
+  <div class="register-form">
     <a-input placeholder="请输入账号">
       <template #prefix>
         <icon-user/>
@@ -10,32 +10,36 @@
         <icon-lock/>
       </template>
     </a-input-password>
-    <div class="other-select">
-      <a-checkbox>自动登录</a-checkbox>
-      <a href="#">忘记密码</a>
-    </div>
-    <a-button type="primary">登录</a-button>
+    <a-input-password placeholder="再次确认密码">
+      <template #prefix>
+        <icon-lock/>
+      </template>
+    </a-input-password>
+    <a-button type="primary">注册</a-button>
   </div>
+
 </template>
 
 <script setup lang="ts">
+
 </script>
 
 <style scoped>
-.login-form {
-  display: flex;
-  flex-direction: column;
-  gap: 20px;
 
-  .other-select {
-    display: flex;
-    justify-content: space-between;
-  }
-}
 
 .arco-input-wrapper {
   border-radius: 8px;
 }
 
 
+.register-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+
+}
+
+.arco-input-wrapper {
+  border-radius: 8px;
+}
 </style>

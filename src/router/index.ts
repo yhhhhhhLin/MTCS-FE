@@ -14,7 +14,7 @@ const routes = [
     {
         path: '/login',
         name: 'userLogin',
-        component: () => import('../views/user/Login.vue')
+        component: () => import('../views/user/LoginAndRegister.vue')
     },
     // 其他匹配不到的跳转到404页面
     {
