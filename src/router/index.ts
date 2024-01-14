@@ -4,7 +4,18 @@ const routes = [
     {
         path: '/',
         name: 'index',
-        component: () => import('../views/index.vue')
+        component: () => import('../views/Index.vue')
+    },
+    {
+        path: '/gptChat',
+        name: 'gptChat',
+        component: () => import('../views/gptChat/Index.vue')
+    },
+    // 其他匹配不到的跳转到404页面
+    {
+        path: '/:pathMatch(.*)*',
+        name: '404',
+        component: () => import('../views/NotFount.vue')
     }
 ]
 
