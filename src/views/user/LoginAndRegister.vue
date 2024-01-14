@@ -2,7 +2,7 @@
   <div class="login-register-page">
     <div class="login-register-box">
       <div class="login-title">
-        <img src="../../assets/vue.svg" alt="logo">
+        <img src="../../assets/logo.svg" alt="logo">
         这里是logo和文字描述
       </div>
       <div class="select-from">
@@ -35,11 +35,13 @@ import RegisterFrom from "../../components/RegisterFrom.vue";
 
 
   .login-register-box {
+    border-radius: 10px;
+    box-shadow: 60px 60px 60px 60px rgba(0, 0, 0, 0.1);
     width: 450px;
     height: 70vh;
     display: flex;
     gap: 30px;
-    background-color: azure;
+    background-color: aliceblue;
     flex-direction: column;
     justify-content: center;
     align-items: center;
