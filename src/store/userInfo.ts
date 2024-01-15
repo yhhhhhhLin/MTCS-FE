@@ -1,10 +1,9 @@
 import {defineStore} from "pinia";
 import {reactive} from "vue";
-import {Message} from "@arco-design/web-vue";
 
-export const userInfoStore = defineStore('user',()=>{
+export const useUserInfoStore = defineStore('user', () => {
     const user = reactive({
-        'id': 0,
+        'id': '',
         'userName': '',
         'userAccount': '',
         'userAvatar': '',
@@ -12,16 +11,9 @@ export const userInfoStore = defineStore('user',()=>{
         'gender': 0,
         'accessKey': '',
         'secretKey': '',
+        'unReadMsgCount': 0
     })
 
-    function getUserInfoById(){
-        if(!user.id){
-            Message.info('请先登录')
-            return user
-        }
 
-
-    }
-
-    return {user,getUserInfoById}
+    return {user}
 })

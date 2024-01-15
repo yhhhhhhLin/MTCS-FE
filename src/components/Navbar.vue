@@ -6,10 +6,14 @@
       :default-selected-keys=[props.default]
   >
     <a-menu-item key="0" data-obj="1" @click="router.push('/')">
+      <template #icon><icon-home></icon-home></template>
       首页
     </a-menu-item>
     <a-menu-item key="1" data-obj="1" @click="router.push('/gptChat')">
-      <router-link to="/chat">GPT聊天</router-link>
+      <template #icon><icon-computer /></template>
+      <router-link to="/chat">
+        GPT聊天
+      </router-link>
     </a-menu-item>
     <a-sub-menu key="2">
       <!-- TODO icon-->

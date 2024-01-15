@@ -24,8 +24,10 @@ import {reactive} from "vue";
 import {userLogin} from "../services/user";
 import {Message} from "@arco-design/web-vue";
 import {useRouter} from "vue-router";
+import {useUserInfoStore} from "../store/userInfo.ts";
 
 const router = useRouter()
+const userinfoStore = useUserInfoStore()
 
 const userLoginInfo: API.LoginUserInfo = reactive({
   userAccount: "",
@@ -36,12 +38,14 @@ const userLoginInfo: API.LoginUserInfo = reactive({
 function loginHandler() {
 
   userLogin(userLoginInfo)
-      .then((res: API.BaseResponse) => {
+      .then((res: API.BaseResponse<any>) => {
         console.log(res)
         if (!res.code) {
           localStorage.setItem('token', res.data)
           router.push('/')
           Message.success('登录成功')
+
+
         } else {
           Message.error(res.message)
         }

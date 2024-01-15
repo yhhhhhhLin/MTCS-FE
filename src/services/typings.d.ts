@@ -1,8 +1,8 @@
 declare namespace API {
 
-    type BaseResponse = {
+    type BaseResponse<T> = {
         code: number,
-        data: any,
+        data: T,
         message: string
     }
 
@@ -16,6 +16,17 @@ declare namespace API {
         userAccount: string
         userPassword: string
         checkPassword: string
+    }
+
+    type UserInfo = {
+        id: string
+        userName: string
+        userAccount: string
+        userAvatar: string
+        userRole: string
+        gender: number
+        accessKey: string
+        secretKey: string
     }
 
 }
