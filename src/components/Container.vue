@@ -14,8 +14,8 @@
                 <img alt="avatar" v-bind:src="userinfoStore.user.userAvatar"/>
               </a-avatar>
               <template #content>
-                <a-doption>个人中心</a-doption>
-                <a-doption>获取sdk</a-doption>
+                <a-doption @click="Message.info('暂未实现')">个人中心</a-doption>
+                <a-doption @click="Message.info('暂未实现')">获取sdk</a-doption>
                 <a-divider margin="0"/>
                 <a-doption @click="logoutHandler">退出登录</a-doption>
               </template>
@@ -23,7 +23,7 @@
           </div>
 
           <a-badge :count="userinfoStore.user.unReadMsgCount" dot :offset="[-12, 4]">
-            <a-button type="text" style="color: #1a1a1a">
+            <a-button type="text" style="color: #1a1a1a" @click="Message.info('暂未实现')">
               <template #icon>
                 <icon-message/>
               </template>
@@ -62,7 +62,7 @@ import {onMounted, ref} from "vue";
 import {useUserInfoStore} from "../store/userInfo.ts";
 import {getUserInfo} from "../services/user";
 import {Message} from "@arco-design/web-vue";
-import router from "../router";
+import router, {routerWhitelist} from "../router";
 
 const userinfoStore = useUserInfoStore()
 const isLogin = ref(false)
@@ -108,6 +108,11 @@ const props = defineProps({
 function logoutHandler() {
   localStorage.removeItem('token')
   token.value = ''
+  // 判断当前页面，如果不是白名单页面，那么就跳转到登录页面
+  if (!routerWhitelist.includes(router.currentRoute.value.path)) {
+    Message.error('请先登录')
+    router.push('/login')
+  }
 
 }
 
@@ -186,7 +191,6 @@ const gridCols = ref('17% 1fr');
   grid-area: content;
   padding: 30px 30px 0 30px;
 }
-
 .arco-btn-size-medium {
   border-radius: 5px;
 }

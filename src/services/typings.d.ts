@@ -29,4 +29,9 @@ declare namespace API {
         secretKey: string
     }
 
+    type GptMessageInfo = {
+        role: string
+        content: string
+    }
+
 }

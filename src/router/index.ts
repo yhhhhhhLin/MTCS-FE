@@ -25,7 +25,7 @@ const routes = [
 ]
 
 // 不用判断登录的跳转白名单
-const routerWhitelist = ['/', '/login']
+export const routerWhitelist = ['/', '/login']
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
