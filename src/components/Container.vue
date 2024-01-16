@@ -1,7 +1,7 @@
 <template>
   <div class="page-container" :style="{ gridTemplateColumns: gridCols }">
 
-    <a-layout-header>
+    <a-layout-header class="a-fixed-header">
       <div class="header-content">
         <a-space class="headerLogo">
           <img class="logo" src="../assets/logo.png" alt="logo">
@@ -44,9 +44,9 @@
       <div class="navbar-content">
         <Navbar :onCollapse="containerOnCollapse" :default="props.navbarDefault"></Navbar>
       </div>
-      <div class="navbar-div">
-        <a-divider margin="0" direction="vertical"></a-divider>
-      </div>
+<!--      <div class="navbar-div">-->
+<!--        <a-divider margin="0" direction="vertical"></a-divider>-->
+<!--      </div>-->
     </div>
 
     <a-layout-content>
@@ -158,14 +158,21 @@ const gridCols = ref('17% 1fr');
   flex-direction: column;
   justify-content: space-between;
 
-
+  position: sticky;
+  top:0;
+  z-index: 1000;
+  opacity: 1;
+  background-color: #ffffff;
   grid-area: header;
 }
-
 
 .page-navbar {
   display: flex;
   justify-content: space-between;
+  position: fixed;
+  width: 17%;
+  height: 92.3%;
+  margin-top: 55px;
 }
 
 .navbar-content {
@@ -188,4 +195,5 @@ const gridCols = ref('17% 1fr');
   display: flex;
   gap: 15px;
 }
+
 </style>

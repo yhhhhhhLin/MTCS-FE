@@ -7,27 +7,39 @@
             <div class="msgCards">
               <a-card title="user">
                 <template #extra>
-                  <icon-refresh />
+                  <div class="card-toolbar">
+                    <icon-edit />
+                    <icon-refresh />
+                  </div>
                 </template>
                 这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1这是消息1
               </a-card>
 
-              <a-card title="gpt">
+              <a-card title="gpt" >
                 <template #extra>
-                  <icon-refresh />
+                  <div class="card-toolbar">
+                    <icon-refresh />
+                    <icon-edit />
+                  </div>
                 </template>
                 这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2这是消息2
               </a-card>
-              <a-card title="user">
+              <a-card title="user" >
                 <template #extra>
-                  <icon-refresh />
+                  <div class="card-toolbar">
+                    <icon-refresh />
+                    <icon-edit />
+                  </div>
                 </template>
                 这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3
               </a-card>
 
               <a-card title="gpt">
                 <template #extra>
-                  <icon-refresh />
+                  <div class="card-toolbar">
+                    <icon-refresh />
+                    <icon-edit />
+                  </div>
                 </template>
                 这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3这是消息3
               </a-card>
@@ -151,6 +163,12 @@ import Container from "../../components/Container.vue";
 .arco-btn-size-medium{
   border-radius: 5px;
 }
+
+.card-toolbar{
+  display: flex;
+  gap: 10px;
+}
+
 
 
 </style>
