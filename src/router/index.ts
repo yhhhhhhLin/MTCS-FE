@@ -1,4 +1,5 @@
 import {createRouter, createWebHistory} from "vue-router";
+import {Message} from "@arco-design/web-vue";
 
 const routes = [
     {
@@ -16,7 +17,6 @@ const routes = [
         name: 'userLogin',
         component: () => import('../views/user/LoginAndRegister.vue')
     },
-    // 其他匹配不到的跳转到404页面
     {
         path: '/:pathMatch(.*)*',
         name: '404',
@@ -25,21 +25,26 @@ const routes = [
 ]
 
 // 不用判断登录的跳转白名单
-const routerWhitelist = ['/','/login']
+const routerWhitelist = ['/', '/login']
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
     routes
 })
 
-router.beforeEach((to,from,next) => {
+router.beforeEach((to, _, next) => {
     // 判断是否是白名单，如果不是白名单的地址，那么就要判断是否登录，如果没有登录，就跳转到登录页面
-    if(routerWhitelist.includes(to.path)){
+    if (routerWhitelist.includes(to.path)) {
         next()
+        return
     }
+
     // 判断是否有登录
-    console.log(to)
-    console.log(from)
+    if (!localStorage.getItem('token')) {
+        Message.error('请先登录')
+        next('/login')
+        return
+    }
     next()
 })
 

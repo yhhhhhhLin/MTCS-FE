@@ -39,7 +39,6 @@ function loginHandler() {
 
   userLogin(userLoginInfo)
       .then((res: API.BaseResponse<any>) => {
-        console.log(res)
         if (!res.code) {
           localStorage.setItem('token', res.data)
           router.push('/')

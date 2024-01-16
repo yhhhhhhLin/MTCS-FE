@@ -7,11 +7,11 @@ import router from "./router";
 import ArcoVueIcon from '@arco-design/web-vue/es/icon';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 
+
 const pinia = createPinia();
 const app = createApp(App);
 app.use(ArcoVue);
 app.use(ArcoVueIcon);
-
 app.use(router);
 
 pinia.use(piniaPluginPersistedstate)

@@ -2,8 +2,7 @@
   <div class="login-register-page">
     <div class="login-register-box">
       <div class="login-title">
-        <img src="../../assets/logo.svg" alt="logo">
-        这里是logo和文字描述
+        <img class="logo" src="../../assets/logo.png" alt="logo">
       </div>
       <div class="select-from">
         <a-tabs default-active-key="1">
@@ -59,6 +58,17 @@ import RegisterFrom from "../../components/RegisterFrom.vue";
     }
 
   }
+}
+
+
+.login-title{
+   display: flex;
+   align-items: end;
+ }
+
+.logo{
+  width: 90%;
+  height: 90%;
 }
 
 
