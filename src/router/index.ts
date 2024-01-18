@@ -1,16 +1,62 @@
 import {createRouter, createWebHistory} from "vue-router";
 import {Message} from "@arco-design/web-vue";
+import {useUserInfoStore} from "../store/userInfo.ts";
 
-const routes = [
+// 需要身份校验的路由地址 默认都会有一个/admin前缀
+const adminRouter: any = [
     {
-        path: '/',
-        name: 'index',
-        component: () => import('../views/Index.vue')
+        path: 'interfaceList',
+        name: '所有接口',
+        component: () => import('../views/admin/interface/list/Index.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true
+        },
     },
     {
+        path: 'auditInterfaceList',
+        name: '接口审核审批',
+        component: () => import('../views/admin/interface/auditList/Index.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true
+        },
+    }
+]
+
+export const routes: any = [
+
+    {
+        path: '/',
+        name: '首页',
+        component: () => import('../views/Index.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true,
+            icon: "icon-home"
+        }
+    },
+
+    {
         path: '/gptChat',
-        name: 'gptChat',
-        component: () => import('../views/gptChat/Index.vue')
+        name: 'GPT聊天',
+        component: () => import('../views/gptChat/Index.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true,
+            icon: "icon-computer"
+        }
+    },
+    {
+        path: '/admin',
+        name: '管理员页面',
+        component: () => import('../views/admin/Index.vue'),
+        meta: {
+            requireAuth: true,
+            // 是否保存到菜单栏
+            fixedNav: true
+        },
+        children: adminRouter
     },
     {
         path: '/login',
@@ -20,7 +66,8 @@ const routes = [
     {
         path: '/:pathMatch(.*)*',
         name: '404',
-        component: () => import('../views/NotFount.vue')
+        component: () => import('../views/NotFount.vue'),
+
     }
 ]
 
@@ -33,6 +80,7 @@ const router = createRouter({
 })
 
 router.beforeEach((to, _, next) => {
+
     // 判断是否是白名单，如果不是白名单的地址，那么就要判断是否登录，如果没有登录，就跳转到登录页面
     if (routerWhitelist.includes(to.path)) {
         next()
@@ -45,7 +93,26 @@ router.beforeEach((to, _, next) => {
         next('/login')
         return
     }
-    next()
+
+    // 管理员校验
+    const userinfoStore = useUserInfoStore()
+    userinfoStore.storeGetUserInfo().then(() => {
+
+        // 判断是否有权限
+        if (to.meta.requireAuth) {
+
+            const userRole = userinfoStore.user.userRole;
+            console.log('userRole:' + userRole)
+            if (userRole !== 'admin') {
+                Message.error('权限不足')
+                next('/')
+                return
+            }
+        }
+        next()
+    })
+
+
 })
 
 export default router
