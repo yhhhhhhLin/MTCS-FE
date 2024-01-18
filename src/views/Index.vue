@@ -1,5 +1,5 @@
 <template>
-  <Container>
+  <Container :navbarDefault="'/'">
     <template v-slot:content>
 
       <div class="content-page">
