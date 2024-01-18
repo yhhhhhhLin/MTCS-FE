@@ -7,7 +7,7 @@
           <img class="logo" src="../assets/logo.png" alt="logo">
         </a-space>
 
-        <a-space class="headerBox" v-if="token">
+        <a-space class="headerBox" v-if="userinfoStore.user.id">
           <div class="avatarBox">
             <a-dropdown trigger="hover">
               <a-avatar :size="32">
@@ -78,26 +78,11 @@ onMounted(() => {
 
   // 如果没有登录,那么获取token,然后获取用户信息
   if (token.value) {
-    console.log('token存在')
-    getUserInfo()
-        .then((res) => {
-          if (!res.code) {
-            const userInfo = res.data
-            userStore.id = userInfo.id
-            userStore.userName = userInfo.userName
-            userStore.userAccount = userInfo.userAccount
-            userStore.userAvatar = userInfo.userAvatar
-            userStore.userRole = userInfo.userRole
-            userStore.gender = userInfo.gender
-            userStore.accessKey = userInfo.accessKey
-            userStore.secretKey = userInfo.secretKey
-            // TODO 设置实际未读消息数量
-            userStore.unReadMsgCount = 9
-          } else {
-            Message.error(res.message)
-          }
-        })
+    userinfoStore.storeGetUserInfo()
+  }else{
+    Message.info('请先登录')
   }
+
 })
 
 

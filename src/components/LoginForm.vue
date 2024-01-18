@@ -44,7 +44,6 @@ function loginHandler() {
           router.push('/')
           Message.success('登录成功')
 
-
         } else {
           Message.error(res.message)
         }
