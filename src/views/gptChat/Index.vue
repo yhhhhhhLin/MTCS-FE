@@ -1,22 +1,45 @@
 <template>
-  <Container :navbarDefault="'1'">
+  <Container :navbarDefault="'/gptChat'">
     <template v-slot:content>
 
       <div class="chat-content">
+
         <div class="cards-parent">
-          <a-scrollbar style="height:72vh;overflow: auto; background-color: #ffffff;border-radius: 10px">
-            <div class="msgCards">
-              <a-card v-for="message in messages" :key="1">
-                <a-card :title="message.role">
+          <a-scrollbar style="height:72vh;overflow: auto; background-color: #ffffff;border-radius: 10px" ref="chatScrollbar">
+            <div class="msgCards" id="chatCard">
+              <template v-for="message in messages" :key="1">
+                <!--                如果role是system，那么不展示出来-->
+                <a-card :title="message.role" v-if="message.role=='user'" size="small">
                   <template #extra>
                     <div class="card-toolbar">
-                      <icon-edit/>
-                      <icon-refresh/>
+                      <!--                      修改弹出气泡的圆角-->
+                      <a-tooltip content="重新编辑" mini>
+                        <icon-edit/>
+                      </a-tooltip>
+                      <a-tooltip content="重新生成回复" mini>
+                        <icon-refresh/>
+                      </a-tooltip>
                     </div>
                   </template>
-                  {{ message.content }}
+                  <v-md-preview :text="message.content"  @copy-code-success="handleCopyCodeSuccess"></v-md-preview>
                 </a-card>
-              </a-card>
+                <a-card :title="message.role" v-else-if="message.role=='assistant'" size="small">
+                  <template #extra>
+                    <div class="card-toolbar">
+                      <!--                      修改弹出气泡的圆角-->
+                      <a-tooltip content="重新编辑" mini>
+                        <icon-edit/>
+                      </a-tooltip>
+                      <a-tooltip content="重新生成回复" mini>
+                        <icon-refresh/>
+                      </a-tooltip>
+                    </div>
+                  </template>
+                  <v-md-preview :text="message.content" @copy-code-success="handleCopyCodeSuccess"></v-md-preview>
+                </a-card>
+
+
+              </template>
             </div>
 
           </a-scrollbar>
@@ -45,7 +68,8 @@
         </div>
       </div>
 
-      <a-modal v-model:visible="editPromptModalVisible" title="添加prompt" @ok="editPromptBeforeOk" @cancel="editPromptBeforeCancel" draggable>
+      <a-modal v-model:visible="editPromptModalVisible" title="添加prompt" @ok="editPromptBeforeOk"
+               @cancel="editPromptBeforeCancel" draggable>
         可以通过prompt指定gpt的角色和回复信息格式等等
         <a-textarea
             v-model="newPromptText"
@@ -60,8 +84,10 @@
 <script setup lang="ts">
 
 import Container from "../../components/Container.vue";
-import {reactive, ref} from "vue";
-import {sendMsgToGpt} from "../../services/gpt";
+import {onMounted, reactive, ref} from "vue";
+import {fetchEventSource} from "@microsoft/fetch-event-source";
+import router from "../../router";
+import {Message} from "@arco-design/web-vue";
 
 const inputMsg = ref('')
 const isDisabledInput = ref(false)
@@ -70,9 +96,37 @@ const editPromptModalVisible = ref(false)
 const oldPromptText = ref('')
 const newPromptText = ref('')
 const messages = reactive<API.GptMessageInfo[]>([])
+const chatScrollbar = ref<any>(null);
+
+
+const storageKeyPre = 'gptMessages_'
+const token = localStorage.getItem('token')
+
+let newMessage = ''
+
+onMounted(() => {
+  // 获取storage中的chatMessage数据
+  const chatMessage = localStorage.getItem(storageKeyPre+token)
+  // 转为数组赋值给messages
+  if (chatMessage) {
+    // 获取prompt
+    const prompt = getPrompt(JSON.parse(chatMessage));
+    oldPromptText.value = prompt
+    newPromptText.value=prompt
+    messages.push(...JSON.parse(chatMessage))
+
+  }
+})
+function getPrompt(msg:API.GptMessageInfo[]) :string{
+  console.log(msg)
+  if(msg.length>0 && msg[0].role === 'system') {
+    return msg[0].content
+  }
+  return ''
+
+}
 
 function handlerSendMessage() {
-  console.log(inputMsg.value)
   isDisabledInput.value = true
   buttonLoading.value = true
   // 将新的消息保存到list后面
@@ -80,20 +134,76 @@ function handlerSendMessage() {
     role: 'user',
     content: inputMsg.value,
   })
+  const msgLength = messages.length
   inputMsg.value = ''
-  sendMsgToGpt(messages).then((res) => {
-    console.log(res)
-    // TODO 添加信息到messages中
-    isDisabledInput.value = false
-    buttonLoading.value = false
 
+  const controller = new AbortController()
+  const token = localStorage.getItem('token')
+  if (!token) {
+    Message.error('请先登录')
+    router.push('/login')
+  }
+
+  fetchEventSource(import.meta.env.VITE_BASE_HOST + import.meta.env.VITE_BASE_PRE_URL + '/gpt/gptChat', {
+    method: 'POST',
+    signal: controller.signal,
+    headers: {
+      "content-Type": "application/json",
+      "token": token
+    },
+    body: JSON.stringify(messages),
+    onmessage(msg) {
+
+
+      const oneMsg = JSON.parse(msg.data)
+
+      if (oneMsg.finish_reason === "stop") {
+        isDisabledInput.value = false
+        buttonLoading.value = false
+        newMessage = ''
+        return
+      }
+
+      const word = oneMsg.delta.content
+      newMessage += word
+      // 添加到Message中
+      messages[msgLength] = {
+        role: 'assistant',
+        content: newMessage
+      }
+
+
+    },
+    onerror(err) {
+      isDisabledInput.value = false
+      buttonLoading.value = false
+      newMessage = '出错了....  '
+      messages[msgLength] = {
+        role: 'assistant',
+        content: newMessage
+      }
+      // 添加错误提示给用户
+      throw err
+    }
+  }).then(res => {
+    // 保存到storage中
+    localStorage.setItem(storageKeyPre+token, JSON.stringify(messages))
   })
-
-
+}
+function handleCopyCodeSuccess(){
+  Message.success('复制成功')
 }
 
 function handlerClearMessage() {
-  messages.length = 0
+  if (messages.length === 0) {
+  } else if (messages[0].role === 'system') {
+    // 把从第二条开始的位置把后面的全部清除
+    messages.splice(1)
+  } else {
+    messages.length = 0
+  }
+  localStorage.setItem(storageKeyPre+token, JSON.stringify(messages))
+  Message.success('聊天记录已清除')
 }
 
 function editPromptBeforeOk() {
@@ -102,7 +212,7 @@ function editPromptBeforeOk() {
 
   if (messages.length > 0 && messages[0].role === 'system' && newPromptText.value) {
     messages[0].content = newPromptText.value
-  } else if(messages.length > 0 && messages[0].role == 'system' && !newPromptText.value){
+  } else if (messages.length > 0 && messages[0].role == 'system' && !newPromptText.value) {
     messages.shift()
   } else if (newPromptText.value) {
     messages.unshift({
@@ -110,6 +220,9 @@ function editPromptBeforeOk() {
       content: newPromptText.value
     })
   }
+  // 需要更新storage
+  localStorage.setItem(storageKeyPre+token, JSON.stringify(messages))
+  Message.success('修改成功')
 
 }
 
@@ -139,6 +252,9 @@ function editPromptBeforeCancel() {
       display: flex;
       flex-direction: column;
       gap: 20px;
+      padding: 15px;
+
+
     }
   }
 
@@ -189,9 +305,18 @@ function editPromptBeforeCancel() {
   display: flex;
   gap: 10px;
 }
+
 .arco-modal-body {
   padding: 1px 20px 24px 20px;
 }
+
+
+
+
+
+
+
+
 
 
 </style>
