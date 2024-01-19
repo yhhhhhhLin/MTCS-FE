@@ -118,7 +118,6 @@ onMounted(() => {
   }
 })
 function getPrompt(msg:API.GptMessageInfo[]) :string{
-  console.log(msg)
   if(msg.length>0 && msg[0].role === 'system') {
     return msg[0].content
   }
@@ -177,7 +176,7 @@ function handlerSendMessage() {
     onerror(err) {
       isDisabledInput.value = false
       buttonLoading.value = false
-      newMessage = '出错了....  '
+      newMessage = '出错了....(可能是你没权限,也可能是系统错误)  '
       messages[msgLength] = {
         role: 'assistant',
         content: newMessage

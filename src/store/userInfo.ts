@@ -45,6 +45,18 @@ export const useUserInfoStore = defineStore('user', () => {
 
     }
 
+    function clearUserInfo() {
+        user.id = ''
+        user.userName = ''
+        user.userAccount = ''
+        user.userAvatar = ''
+        user.userRole = ''
+        user.gender = 0
+        user.accessKey = ''
+        user.secretKey = ''
+        user.unReadMsgCount = 0
+    }
 
-    return {user, storeGetUserInfo}
+
+    return {user, storeGetUserInfo,clearUserInfo}
 })

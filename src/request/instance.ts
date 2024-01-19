@@ -30,11 +30,12 @@ instance.interceptors.request.use(function (config) {
 instance.interceptors.response.use(function (response) {
     return response;
 }, function (error) {
-    if (error.response.status === 401) {
+    console.log(error)
+    if (error.response?.status === 401) {
         Message.error('请先登录')
         router.push('/login')
     }
-    if (error.response.status === 403) {
+    if (error.response?.status === 403) {
         Message.error('没有权限')
     }
     return Promise.reject(error);

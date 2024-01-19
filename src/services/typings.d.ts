@@ -29,9 +29,41 @@ declare namespace API {
         secretKey: string
     }
 
+
     type GptMessageInfo = {
         role: string
         content: string
+    }
+
+    type pageResult<T> = {
+        records: T[],
+        total: string,
+        size: string,
+        current: string,
+        orders: [],
+        optimizeCountSql: boolean,
+        searchCount: boolean,
+        countId: string,
+        maxLimit: string,
+        pages: string
+    }
+
+    type InterfaceInfo = {
+        id: string,
+        name: string,
+        method: string,
+        requestParams: string,
+        getRequestParams: string,
+        description: string,
+        uri :string,
+        host: string,
+        requestHeader: string,
+        responseHeader: string,
+        pointsRequired: number
+        status: number,
+        userId: string,
+        createTime: Date,
+        updateTime: Date,
     }
 
 }

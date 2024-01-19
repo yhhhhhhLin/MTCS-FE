@@ -44,9 +44,9 @@
       <div class="navbar-content">
         <Navbar :onCollapse="containerOnCollapse" :default="props.navbarDefault"></Navbar>
       </div>
-<!--      <div class="navbar-div">-->
-<!--        <a-divider margin="0" direction="vertical"></a-divider>-->
-<!--      </div>-->
+      <!--      <div class="navbar-div">-->
+      <!--        <a-divider margin="0" direction="vertical"></a-divider>-->
+      <!--      </div>-->
     </div>
 
     <a-layout-content>
@@ -60,7 +60,6 @@
 import Navbar from "./Navbar.vue";
 import {onMounted, ref} from "vue";
 import {useUserInfoStore} from "../store/userInfo.ts";
-import {getUserInfo} from "../services/user";
 import {Message} from "@arco-design/web-vue";
 import router, {routerWhitelist} from "../router";
 
@@ -68,7 +67,9 @@ const userinfoStore = useUserInfoStore()
 const isLogin = ref(false)
 const token = ref(localStorage.getItem('token'))
 
-
+const props = defineProps({
+  navbarDefault: String
+})
 onMounted(() => {
   const userStore = userinfoStore.user;
   if (userinfoStore.user.id) {
@@ -79,20 +80,18 @@ onMounted(() => {
   // 如果没有登录,那么获取token,然后获取用户信息
   if (token.value) {
     userinfoStore.storeGetUserInfo()
-  }else{
-    Message.info('请先登录')
   }
 
 })
 
 
-const props = defineProps({
-  navbarDefault: String
-})
+
 
 function logoutHandler() {
   localStorage.removeItem('token')
+  // 清除pinia里面的数据
   token.value = ''
+  userinfoStore.clearUserInfo()
   // 判断当前页面，如果不是白名单页面，那么就跳转到登录页面
   if (!routerWhitelist.includes(router.currentRoute.value.path)) {
     Message.error('请先登录')
@@ -124,7 +123,7 @@ const gridCols = ref('17% 1fr');
   grid-template-rows: 8% 1fr;
 }
 
-.logo{
+.logo {
   width: 43%;
   height: 43%;
 }
@@ -149,7 +148,7 @@ const gridCols = ref('17% 1fr');
   justify-content: space-between;
 
   position: sticky;
-  top:0;
+  top: 0;
   z-index: 1000;
   opacity: 1;
   background-color: #ffffff;
@@ -176,6 +175,7 @@ const gridCols = ref('17% 1fr');
   grid-area: content;
   padding: 30px 30px 0 30px;
 }
+
 .arco-btn-size-medium {
   border-radius: 5px;
 }
