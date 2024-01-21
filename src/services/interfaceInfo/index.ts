@@ -23,3 +23,10 @@ export function getInterfaceDetail(id: any) {
 export function invokeInterface(invokeParams: any) {
     return postDefault('/main/interfaceInfo/invoke',invokeParams)
 }
+export function getRemCountAndCredits(params: any) {
+    return get('/main/userInterfaceInfo/remcountandcredits',params)
+}
+
+export function getInterfaceExperience(interfaceInfoId: any) {
+    return get('/main/userInterfaceInfo/experience',interfaceInfoId)
+}

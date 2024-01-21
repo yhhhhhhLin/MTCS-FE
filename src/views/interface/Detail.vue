@@ -18,8 +18,15 @@
           </a-card>
         </div>
         <div class="interface-detail-remaining">
-          剩余调用次数: {{ interfaceDrawerDetail.remNum ?? 0 }}
-          <a-button type="primary">获取免费调用次数</a-button>
+          <div class="rem-num-credits">
+            <div class="remNum">
+              剩余调用次数: {{ interfaceDrawerDetail.remNum ?? 0 }}
+            </div>
+            <div class="credits">
+              剩余积分: {{ interfaceDrawerDetail.credits ?? 0 }}
+            </div>
+          </div>
+          <a-button type="primary" @click="getFreeNum">获取免费调用次数</a-button>
         </div>
         <div class="interface-test">
           <a-card title="接口调试">
@@ -69,7 +76,7 @@
 
         <div class="interface-test-result">
           <a-card title="返回结果">
-            {{testResult}}
+            <pre>{{testResult}}</pre>
           </a-card>
         </div>
       </div>
@@ -82,7 +89,12 @@
 import Container from "../../components/Container.vue";
 import {onMounted, reactive, ref} from "vue";
 import router from "../../router";
-import {getInterfaceDetail, invokeInterface} from "../../services/interfaceInfo";
+import {
+  getInterfaceDetail,
+  getInterfaceExperience,
+  getRemCountAndCredits,
+  invokeInterface
+} from "../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
 
 const interfaceInfoDrawerColumns = [
@@ -166,29 +178,45 @@ const interfaceDrawerDetail = reactive({
   responseHeader: '',
   allNum: 0,
   remNum: 0,
+  credits: 0,
   pointsRequired: 0,
 })
 const testResult = ref('')
+
+function getRemNumAndCredits() {
+  console.log('开始获取请求次数')
+  getRemCountAndCredits({interfaceId: router.currentRoute.value.params.id})
+      .then((resp)=>{
+        if(!resp.code){
+          interfaceDrawerDetail.remNum = resp.data.remNum
+          interfaceDrawerDetail.credits = resp.data.credits
+        }
+      })
+}
 
 onMounted(() => {
   const id = router.currentRoute.value.params.id
   // 获取接口详细信息
   getInterfaceDetail({interfaceId: id})
       .then((res) => {
-        interfaceDrawerDetail.name = res.data.name
-        interfaceDrawerDetail.description = res.data.description
-        interfaceDrawerDetail.method = res.data.method
-        interfaceDrawerDetail.uri = res.data.uri
-        interfaceDrawerDetail.host = res.data.host
-        interfaceDrawerDetail.status = res.data.status
-        interfaceDrawerDetail.createTime = res.data.createTime
-        interfaceDrawerDetail.requestParams = res.data.requestParams
-        interfaceDrawerDetail.getRequestParams = res.data.getRequestParams
-        interfaceDrawerDetail.requestHeader = res.data.requestHeader
-        interfaceDrawerDetail.responseHeader = res.data.responseHeader
-        interfaceDrawerDetail.allNum = res.data.allNum
-        interfaceDrawerDetail.remNum = res.data.remNum
-        interfaceDrawerDetail.pointsRequired = res.data.pointsRequired
+        if(!res.code){
+          interfaceDrawerDetail.name = res.data.name
+          interfaceDrawerDetail.description = res.data.description
+          interfaceDrawerDetail.method = res.data.method
+          interfaceDrawerDetail.uri = res.data.uri
+          interfaceDrawerDetail.host = res.data.host
+          interfaceDrawerDetail.status = res.data.status
+          interfaceDrawerDetail.createTime = res.data.createTime
+          interfaceDrawerDetail.requestParams = res.data.requestParams
+          interfaceDrawerDetail.getRequestParams = res.data.getRequestParams
+          interfaceDrawerDetail.requestHeader = res.data.requestHeader
+          interfaceDrawerDetail.responseHeader = res.data.responseHeader
+          interfaceDrawerDetail.allNum = res.data.allNum
+          interfaceDrawerDetail.pointsRequired = res.data.pointsRequired
+          getRemNumAndCredits()
+        }else{
+          Message.error(res.message)
+        }
       })
       .catch((res) => {
         console.log(res)
@@ -212,10 +240,28 @@ const handleAdd = () => {
 
 function handleTest() {
   invokeInterface(testParams).then((resp) => {
-    console.log(resp)
-    testResult.value = resp
+    if(resp?.code){
+      Message.error(resp?.message)
+    }else {
+      Message.success('测试成功')
+      testResult.value = resp
+      getRemNumAndCredits()
+    }
   }).catch((err) => {
     Message.error(err)
+  })
+}
+function getFreeNum(){
+  getInterfaceExperience({id:testParams.id}).then((res) => {
+    if(!res.code){
+      interfaceDrawerDetail.remNum = Number(res.data.remNum)
+      Message.success('获取积分成功')
+    }else{
+      Message.error(res.message)
+    }
+  }).catch((err)=>{
+    Message.error('获取失败')
+    console.log(err)
   })
 }
 
@@ -257,6 +303,11 @@ const handleDelete = (index) => {
 .post-params-card {
   display: flex;
   flex-direction: column;
+  gap: 10px;
+}
+
+.rem-num-credits{
+  display: flex;
   gap: 10px;
 }
 

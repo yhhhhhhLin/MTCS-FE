@@ -153,6 +153,7 @@ const gridCols = ref('17% 1fr');
   opacity: 1;
   background-color: #ffffff;
   grid-area: header;
+  height: 60px;
 }
 
 .page-navbar {

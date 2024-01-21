@@ -48,6 +48,16 @@ export const routes: any = [
     },
 
     {
+        path: '/myInterface',
+        name: '我发布的接口',
+        component: () => import('../views/interface/list.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true,
+            icon: "icon-list"
+        }
+    },
+    {
         path: '/gptChat',
         name: 'GPT聊天',
         component: () => import('../views/gptChat/Index.vue'),

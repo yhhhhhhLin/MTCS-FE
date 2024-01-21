@@ -231,6 +231,12 @@ const interfaceInfoUpdateOrCreateModalColumns: any[] = [
     ],
   },
   {
+    label: '接口描述',
+    dataIndex: 'description',
+    placeholder: '请输入接口描述',
+    type: 'textarea',
+  },
+  {
     label: '需要的积分',
     dataIndex: 'pointsRequired',
     placeholder: '请输入接口名称',
@@ -247,12 +253,6 @@ const interfaceInfoUpdateOrCreateModalColumns: any[] = [
     dataIndex: 'uri',
     placeholder: '请输入接口uri',
     type: 'input',
-  },
-  {
-    label: '接口描述',
-    dataIndex: 'description',
-    placeholder: '请输入接口描述',
-    type: 'textarea',
   },
   {
     label: 'post请求参数',
