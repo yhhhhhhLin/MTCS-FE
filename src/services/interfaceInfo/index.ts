@@ -1,4 +1,4 @@
-import {get, post} from "../../request";
+import {get, post, postDefault} from "../../request";
 
 export function getInterfaceList(params: any) {
     return get<API.pageResult<API.InterfaceInfo>>('/main/interfaceInfo/list/page',params)
@@ -14,4 +14,12 @@ export function interfaceInfoUpdate(data: any) {
 
 export function interfaceInfoDelete(data: any) {
     return post<boolean>('/main/interfaceInfo/delete',data)
+}
+
+export function getInterfaceDetail(id: any) {
+    return get<API.InterfaceInfoDetail>('/main/userInterfaceInfo/detailwithtotal',id)
+}
+
+export function invokeInterface(invokeParams: any) {
+    return postDefault('/main/interfaceInfo/invoke',invokeParams)
 }

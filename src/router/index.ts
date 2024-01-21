@@ -69,6 +69,11 @@ export const routes: any = [
         children: adminRouter
     },
     {
+      path: '/interface/detail/:id',
+      name: '接口详情',
+      component: () => import('../views/interface/Detail.vue'),
+    },
+    {
         path: '/login',
         name: 'userLogin',
         component: () => import('../views/user/LoginAndRegister.vue')
@@ -77,7 +82,6 @@ export const routes: any = [
         path: '/:pathMatch(.*)*',
         name: '404',
         component: () => import('../views/NotFount.vue'),
-
     },
 ]
 

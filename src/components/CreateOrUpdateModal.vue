@@ -8,11 +8,11 @@
           <!--        判断不同的类型-->
           <div v-if="item.type==='input'">
             <div class="form-input">
-              <a-input  v-model="props.data[item.dataIndex]"  :placeholder="item.placeholder"/>
+              <a-input v-model="props.data[item.dataIndex]" :placeholder="item.placeholder"/>
             </div>
           </div>
           <div v-else-if="item.type==='select'">
-            <a-select :placeholder="item.placeholder" v-model="props.data[item.dataIndex]"  >
+            <a-select :placeholder="item.placeholder" v-model="props.data[item.dataIndex]">
               <a-option v-for="option of item.options" :value="option.value">{{ option.label }}</a-option>
             </a-select>
           </div>
@@ -31,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-import {defineProps, defineEmits, computed, reactive} from 'vue';
+import {defineEmits, defineProps} from 'vue';
 
 const props = defineProps({
   title: {
@@ -71,7 +71,7 @@ const props = defineProps({
 });
 
 // 定义自定义事件
-const emits = defineEmits(['updateModalVisible','handlerSubmit']);
+const emits = defineEmits(['updateModalVisible', 'handlerSubmit']);
 const handleCancel = () => {
   emits('updateModalVisible', false);
 }
@@ -81,18 +81,18 @@ const handleSubmit = () => {
 }
 
 
-
-
 </script>
 
 <style scoped>
-.arco-input-wrapper{
+.arco-input-wrapper {
   width: 400px;
 }
-.form-textarea{
+
+.form-textarea {
   width: 400px;
 }
-.form-input{
+
+.form-input {
   width: 400px;
 }
 

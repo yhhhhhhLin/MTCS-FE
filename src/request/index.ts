@@ -18,3 +18,8 @@ export async function del<T>(url: string, params?: any): Promise<API.BaseRespons
     const resp = await instance.delete(url, {params})
     return resp.data
 }
+
+export async function postDefault(url: string, data?: any,params?: any): Promise<string> {
+    const resp = await instance.post(url, data, {params})
+    return resp.data
+}

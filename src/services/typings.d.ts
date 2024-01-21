@@ -66,4 +66,24 @@ declare namespace API {
         updateTime: Date,
     }
 
+    type InterfaceInfoDetail = {
+        id: string,
+        name: string,
+        method: string,
+        requestParams: string,
+        getRequestParams: string,
+        description: string,
+        uri :string,
+        host: string,
+        requestHeader: string,
+        responseHeader: string,
+        pointsRequired: number
+        status: number,
+        userId: string,
+        createTime: Date,
+        updateTime: Date,
+        allNum: number,
+        remNum: number
+    }
+
 }
