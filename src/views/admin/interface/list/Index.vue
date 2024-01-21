@@ -43,7 +43,7 @@
               </template>
               查询
             </a-button>
-            <a-button>
+            <a-button @click="handlerResetForm">
               <template #icon>
                 <icon-refresh/>
               </template>
@@ -53,19 +53,36 @@
         </div>
 
         <a-divider></a-divider>
-        <div class="interfaces-list">
-          <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
-                   :pagination="selectForm" size="small">
-            <template #optional="{ record }">
-              <a-link v-if="record.status === 0" @click="Message.info('暂未实现')">上线</a-link>
-              <a-link v-else @click="Message.info('暂未实现')" status="danger">下线</a-link>
-            </template>
-            <template #name="{ record }">
-              <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
-            </template>
-          </a-table>
+        <div class="interface-list-main">
+          <div class="interface-add-btn">
+            <a-button type="primary" @click="handlerAddInterface">
+              <template #icon>
+                <icon-plus/>
+              </template>
+              新增
+            </a-button>
+            <a-button @click="handlerExportInterface">
+              <template #icon>
+                <icon-download/>
+              </template>
+              导出
+            </a-button>
 
+          </div>
+          <div class="interfaces-list">
+            <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
+                     :pagination="selectForm" size="small">
+              <template #optional="{ record }">
+                <a-link v-if="record.status === 0" @click="Message.info('暂未实现')">上线</a-link>
+                <a-link v-else @click="Message.info('暂未实现')" status="danger">下线</a-link>
+              </template>
+              <template #name="{ record }">
+                <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
+              </template>
+            </a-table>
+          </div>
         </div>
+
       </a-card>
       <a-drawer :width="540" :drawer-style="{'border-radius': '7px'}" :visible="interfaceDetailVisible"
                 hide-cancel @cancel="handleDrawerCancel" unmountOnClose>
@@ -102,14 +119,23 @@
         <div>是否真的要删除，此操作不可逆！</div>
       </a-modal>
 
-<!--      <InterfaceUpdateModal @updateInterfaceUpdateModalVisible="updateInterfaceUpdateModalVisible"-->
-<!--                            :interfaceInfo="updateInterfaceInfo"-->
-<!--                            :interfaceUpdateModalVisible="interfaceUpdateModalVisible"></InterfaceUpdateModal>-->
+
       <CreateOrUpdateModal :title="'修改接口信息'"
                            :data="updateInterfaceInfo"
-                           :items="interfaceInfoUpdateModalColumns"
+                           :items="interfaceInfoUpdateOrCreateModalColumns"
                            :modalVisible="interfaceUpdateModalVisible"
                            @updateModalVisible="updateInterfaceUpdateModalVisible"
+                           @handlerSubmit="handlerUpdateSubmit"
+                           :okLoading="createOrUpdateOkLoading"
+      ></CreateOrUpdateModal>
+
+      <CreateOrUpdateModal :title="'新增加口'"
+                           :data="createInterfaceInfo"
+                           :items="interfaceInfoUpdateOrCreateModalColumns"
+                           :modalVisible="interfaceCreateModalVisible"
+                           @updateModalVisible="updateInterfaceCreateModalVisible"
+                           @handlerSubmit="handlerCreateSubmit"
+                           :okLoading="createOrUpdateOkLoading"
       ></CreateOrUpdateModal>
 
 
@@ -123,9 +149,13 @@
 
 import Container from "../../../../components/Container.vue";
 import {h, onMounted, reactive, ref} from "vue";
-import {getInterfaceList} from "../../../../services/interfaceInfo";
+import {
+  adminInterfaceInfoAdd,
+  getInterfaceList,
+  interfaceInfoDelete,
+  interfaceInfoUpdate
+} from "../../../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
-import InterfaceUpdateModal from "../../../../components/InterfaceUpdateModal.vue";
 import CreateOrUpdateModal from "../../../../components/CreateOrUpdateModal.vue";
 
 
@@ -169,7 +199,7 @@ const interfaceStatusOptions = reactive<any[]>([
   },
 ]);
 
-const interfaceInfoUpdateModalColumns: any[] = [
+const interfaceInfoUpdateOrCreateModalColumns: any[] = [
   {
     label: '接口名称',
     dataIndex: 'name',
@@ -357,7 +387,10 @@ const interfaceInfoColumns = [
 const interfaceDetailVisible = ref(false)
 const deleteTipsModalVisible = ref(false)
 const interfaceUpdateModalVisible = ref(false)
+const interfaceCreateModalVisible = ref(false)
+const createOrUpdateOkLoading = ref(false)
 let updateInterfaceInfo = reactive<any>({})
+let createInterfaceInfo = reactive<any>({})
 
 function handlerSearchAllInterface() {
   getInterfaceList(selectForm).then((res) => {
@@ -369,6 +402,18 @@ function handlerSearchAllInterface() {
     Message.error('获取接口信息失败')
     console.log(err)
   })
+
+}
+
+function handlerResetForm() {
+  selectForm.current = 1;
+  selectForm.pageSize = 10;
+  selectForm.name = null;
+  selectForm.method = null;
+  selectForm.description = null;
+  selectForm.uri = null;
+  selectForm.host = null;
+  selectForm.status = null
 
 }
 
@@ -392,9 +437,22 @@ function handleDrawerCancel() {
 }
 
 function handleDeleteTipsModalOk() {
-  deleteTipsModalVisible.value = false
-  console.log('删除某一个接口' + interfaceDrawerDetail.id)
-}
+  interfaceInfoDelete({id: interfaceDrawerDetail.id})
+      .then(resp => {
+        if(!resp.code){
+          Message.success('删除接口成功')
+          deleteTipsModalVisible.value = false
+          interfaceDetailVisible.value=false
+          handlerSearchAllInterface()
+        }else{
+          Message.error(resp.message)
+          console.log(resp)
+        }
+      })
+      .catch((err) => {
+        Message.error('删除接口失败')
+        console.log(err)
+      })}
 
 function handleDeleteTipsModalCancel() {
   deleteTipsModalVisible.value = false
@@ -405,9 +463,83 @@ function updateInterfaceUpdateModalVisible(val: any) {
   interfaceUpdateModalVisible.value = val
 }
 
+function updateInterfaceCreateModalVisible(val: any) {
+  interfaceCreateModalVisible.value = val
+}
+
+
 function updateInterfaceFun(val) {
   interfaceUpdateModalVisible.value = true
   updateInterfaceInfo = reactive({...interfaceDrawerDetail});
+}
+
+function handlerAddInterface() {
+  interfaceCreateModalVisible.value = true
+}
+
+
+function handlerExportInterface() {
+  Message.info('暂未实现')
+}
+
+function initInterfaceInfo() {
+  createInterfaceInfo.name = ''
+  createInterfaceInfo.description = ''
+  createInterfaceInfo.method = ''
+  createInterfaceInfo.host = ''
+  createInterfaceInfo.uri = ''
+  createInterfaceInfo.pointsRequired = 0
+  createInterfaceInfo.requestParams = ''
+  createInterfaceInfo.getRequestParams = ''
+  createInterfaceInfo.requestHeader = ''
+  createInterfaceInfo.responseHeader = ''
+  createInterfaceInfo.status = 1
+
+}
+
+function handlerCreateSubmit(data) {
+  createOrUpdateOkLoading.value = true
+  adminInterfaceInfoAdd(createInterfaceInfo)
+      .then(resp => {
+        if(!resp.code){
+          Message.success('创建接口成功')
+          handlerSearchAllInterface()
+          interfaceCreateModalVisible.value = false
+          // todo 将数据清空
+          initInterfaceInfo()
+        }else{
+          Message.error(resp.message)
+          console.log(resp)
+        }
+        createOrUpdateOkLoading.value = false
+      })
+      .catch((err) => {
+        Message.error('创建接口失败')
+        console.log(err)
+      })
+
+}
+
+function handlerUpdateSubmit(data) {
+  console.log(data)
+  createOrUpdateOkLoading.value = true
+  interfaceInfoUpdate(updateInterfaceInfo)
+      .then((resp) => {
+        if (!resp.code) {
+          Message.success('更新接口成功')
+          handlerSearchAllInterface()
+          interfaceDrawerDetail = reactive({...updateInterfaceInfo})
+          interfaceUpdateModalVisible.value = false
+        } else {
+          Message.error(resp.message)
+          console.log(resp)
+        }
+        createOrUpdateOkLoading.value = false
+      })
+      .catch((err) => {
+        Message.error('更新接口失败')
+        console.log(err)
+      })
 }
 
 
@@ -451,6 +583,17 @@ function updateInterfaceFun(val) {
 }
 
 .drawer-title-opt {
+  display: flex;
+  gap: 10px;
+}
+
+.interface-list-main {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+}
+
+.interface-add-btn {
   display: flex;
   gap: 10px;
 }

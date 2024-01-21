@@ -36,6 +36,16 @@ export const routes: any = [
             icon: "icon-home"
         }
     },
+    {
+        path: '/interface/square',
+        name: '接口广场',
+        component: () => import('../views/interface/Square.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true,
+            icon: "icon-list"
+        }
+    },
 
     {
         path: '/gptChat',
@@ -68,7 +78,7 @@ export const routes: any = [
         name: '404',
         component: () => import('../views/NotFount.vue'),
 
-    }
+    },
 ]
 
 // 不用判断登录的跳转白名单

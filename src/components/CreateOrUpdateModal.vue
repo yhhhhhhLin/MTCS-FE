@@ -1,9 +1,9 @@
 <template>
   <a-modal :visible="props.modalVisible" width="600px" :mask-closable=false :title="props.title"
-           @cancel="handleUpdateInterfaceInfoCancel" @ok="handleUpdateInterfaceInfoSubmit"
-           @before-ok="handleUpdateInterfaceInfoSubmit">
+           @cancel="handleCancel" @ok="handleSubmit"
+           :ok-loading="okLoading">
     <div v-if="data">
-      <a-form :model="props.data" @submit="handleUpdateInterfaceInfoSubmit">
+      <a-form :model="props.data" @submit="handleSubmit">
         <a-form-item v-for="item of items" :field="item.dataIndex" :label="item.label" validate-trigger="blur">
           <!--        判断不同的类型-->
           <div v-if="item.type==='input'">
@@ -18,7 +18,7 @@
           </div>
           <div v-else-if="item.type==='textarea'">
             <div class="form-textarea"></div>
-            <a-textarea v-model="props.data[item.dataIndex]"  auto-size/>
+            <a-textarea v-model="props.data[item.dataIndex]" :placeholder="item.placeholder" auto-size/>
           </div>
           <div v-else>无</div>
         </a-form-item>
@@ -63,21 +63,22 @@ const props = defineProps({
   modalVisible: {
     type: Boolean,
     default: false
+  },
+  okLoading: {
+    type: Boolean,
+    default: false
   }
 });
 
 // 定义自定义事件
-const emits = defineEmits(['updateModalVisible']);
-const handleUpdateInterfaceInfoCancel = () => {
+const emits = defineEmits(['updateModalVisible','handlerSubmit']);
+const handleCancel = () => {
   emits('updateModalVisible', false);
 }
-const handleUpdateInterfaceInfoSubmit = () => {
-  console.log(props.data)
+const handleSubmit = () => {
   // 触发一个自定义事件来通知父组件更新 visible 的值
-  emits('updateModalVisible', false);
+  emits('handlerSubmit', props.data)
 }
-
-
 
 
 
