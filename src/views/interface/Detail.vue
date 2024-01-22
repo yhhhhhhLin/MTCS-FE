@@ -56,7 +56,10 @@
                     </a-form-item>
                   </a-form>
                   <div>
-                    <a-button @click="handleAdd" type="primary">添加get请求参数</a-button>
+                    <a-button shape="circle">
+                      <icon-plus/>
+                    </a-button>
+                    <!--                    <a-button @click="handleAdd" type="primary">添加get请求参数</a-button>-->
                   </div>
                 </div>
               </div>
@@ -76,7 +79,7 @@
 
         <div class="interface-test-result">
           <a-card title="返回结果">
-            <pre>{{testResult}}</pre>
+            <pre>{{ testResult }}</pre>
           </a-card>
         </div>
       </div>
@@ -186,8 +189,8 @@ const testResult = ref('')
 function getRemNumAndCredits() {
   console.log('开始获取请求次数')
   getRemCountAndCredits({interfaceId: router.currentRoute.value.params.id})
-      .then((resp)=>{
-        if(!resp.code){
+      .then((resp) => {
+        if (!resp.code) {
           interfaceDrawerDetail.remNum = resp.data.remNum
           interfaceDrawerDetail.credits = resp.data.credits
         }
@@ -199,7 +202,7 @@ onMounted(() => {
   // 获取接口详细信息
   getInterfaceDetail({interfaceId: id})
       .then((res) => {
-        if(!res.code){
+        if (!res.code) {
           interfaceDrawerDetail.name = res.data.name
           interfaceDrawerDetail.description = res.data.description
           interfaceDrawerDetail.method = res.data.method
@@ -214,7 +217,7 @@ onMounted(() => {
           interfaceDrawerDetail.allNum = res.data.allNum
           interfaceDrawerDetail.pointsRequired = res.data.pointsRequired
           getRemNumAndCredits()
-        }else{
+        } else {
           Message.error(res.message)
         }
       })
@@ -240,10 +243,10 @@ const handleAdd = () => {
 
 function handleTest() {
   invokeInterface(testParams).then((resp) => {
-    if(resp?.code){
+    if (resp?.code) {
       Message.error(resp?.message)
-    }else {
-      Message.success('测试成功')
+    } else {
+      Message.success('发送成功')
       testResult.value = resp
       getRemNumAndCredits()
     }
@@ -251,15 +254,16 @@ function handleTest() {
     Message.error(err)
   })
 }
-function getFreeNum(){
-  getInterfaceExperience({id:testParams.id}).then((res) => {
-    if(!res.code){
+
+function getFreeNum() {
+  getInterfaceExperience({id: testParams.id}).then((res) => {
+    if (!res.code) {
       interfaceDrawerDetail.remNum = Number(res.data.remNum)
       Message.success('获取积分成功')
-    }else{
+    } else {
       Message.error(res.message)
     }
-  }).catch((err)=>{
+  }).catch((err) => {
     Message.error('获取失败')
     console.log(err)
   })
@@ -306,7 +310,7 @@ const handleDelete = (index) => {
   gap: 10px;
 }
 
-.rem-num-credits{
+.rem-num-credits {
   display: flex;
   gap: 10px;
 }
