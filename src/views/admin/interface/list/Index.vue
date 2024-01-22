@@ -73,8 +73,8 @@
             <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
                      :pagination="selectForm" size="small">
               <template #optional="{ record }">
-                <a-link v-if="record.status === 0" @click="Message.info('暂未实现')">上线</a-link>
-                <a-link v-else @click="Message.info('暂未实现')" status="danger">下线</a-link>
+                <a-link v-if="record.status === 0" @click="interfaceOnline(record.id)">上线</a-link>
+                <a-link v-else @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
               </template>
               <template #name="{ record }">
                 <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
@@ -153,10 +153,47 @@ import {
   adminInterfaceInfoAdd,
   getInterfaceList,
   interfaceInfoDelete,
-  interfaceInfoUpdate
+  interfaceInfoUpdate, updateInterfaceStatus,
 } from "../../../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
 import CreateOrUpdateModal from "../../../../components/CreateOrUpdateModal.vue";
+
+function interfaceOnline(id:number){
+  updateInterfaceStatus({interfaceId:id, status:1}).then((resp)=>{
+    if(!resp.code){
+      Message.success("操作成功")
+      // 查询获取所有接口信息
+      handlerSearchAllInterface()
+    }else{
+      Message.error(resp.message)
+      console.log(resp)
+    }
+
+  }).catch((err)=>{
+    Message.error(err.message)
+    console.log(err)
+  })
+
+}
+
+function interfaceOffLine(id:number){
+  updateInterfaceStatus({interfaceId:id, status:0}).then((resp)=>{
+    if(!resp.code){
+      Message.success("操作成功")
+      // 查询获取所有接口信息
+      handlerSearchAllInterface()
+    }else{
+      Message.error(resp.message)
+      console.log(resp)
+    }
+
+  }).catch((err)=>{
+    Message.error(err.message)
+    console.log(err)
+  })
+
+}
+
 
 
 const selectForm = reactive({
@@ -397,7 +434,6 @@ function handlerSearchAllInterface() {
     // interfaceInfoLists.slice(0,...res.data.records)
     interfaceInfoLists.length = 0
     interfaceInfoLists.push(...res.data.records)
-    Message.success('获取接口信息成功')
   }).catch((err) => {
     Message.error('获取接口信息失败')
     console.log(err)
@@ -421,6 +457,7 @@ function handlerResetForm() {
 onMounted(() => {
   // 获取所有接口信息
   handlerSearchAllInterface()
+  Message.success('获取接口信息成功')
 })
 
 function openInterfaceDetail(interfaceInfoId: string) {

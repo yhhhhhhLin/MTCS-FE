@@ -1,4 +1,4 @@
-import {get, post, postDefault} from "../../request";
+import {get, post, postDefault, put} from "../../request";
 
 export function getInterfaceList(params: any) {
     return get<API.pageResult<API.InterfaceInfo>>('/main/interfaceInfo/list/page',params)
@@ -29,4 +29,8 @@ export function getRemCountAndCredits(params: any) {
 
 export function getInterfaceExperience(interfaceInfoId: any) {
     return get('/main/userInterfaceInfo/experience',interfaceInfoId)
+}
+
+export function updateInterfaceStatus(dto: API.UpdateStatusDto) {
+    return put('/main/interfaceInfo/updateStatus',dto)
 }

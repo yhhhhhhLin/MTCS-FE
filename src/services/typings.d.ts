@@ -86,4 +86,8 @@ declare namespace API {
         remNum: number
     }
 
+    type UpdateStatusDto = {
+        interfaceId: number
+        status: number
+    }
 }

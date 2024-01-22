@@ -9,7 +9,7 @@ export async function post<T>(url: string, data?: any,params?: any): Promise<API
     return resp.data
 }
 
-export async function put<T>(url: string, params?: any, data?: any): Promise<API.BaseResponse<T>> {
+export async function put<T>(url: string, data?: any, params?: any): Promise<API.BaseResponse<T>> {
     const resp = await instance.put(url, data, {params})
     return resp.data
 }
