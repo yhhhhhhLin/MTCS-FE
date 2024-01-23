@@ -61,7 +61,7 @@
               </a-popconfirm>
             </div>
             <div class="msg-input">
-              <a-textarea auto-size v-model="inputMsg" placeholder="请输入要提问的问题" :disabled="isDisabledInput"/>
+              <a-textarea :auto-size="{minRows:1,maxRows:12}" v-model="inputMsg" placeholder="请输入要提问的问题" :disabled="isDisabledInput"/>
               <a-button type="primary" @click="handlerSendMessage" :loading="buttonLoading">发送</a-button>
             </div>
           </a-card>

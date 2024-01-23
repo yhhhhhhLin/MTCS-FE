@@ -43,6 +43,10 @@ export function userInterfaceInfoAdd(data: any) {
     return post<string>('/audit/audit/interface',data)
 }
 
+export function getAuditInterface(data: any) {
+    return get('/audit/audit/interface',data)
+}
+
 export function getInterfaceAllAnalyze(data:any){
     return get('/main/analyze/all',data)
 }

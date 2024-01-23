@@ -90,4 +90,24 @@ declare namespace API {
         interfaceId: number
         status: number
     }
+
+    type AuditInterfaceInfo = {
+        id: string;
+        apiId: string | null;
+        name: string;
+        apiDescription: string;
+        uri: string;
+        host: string;
+        method: string;
+        requestHeader: string;
+        responseHeader: string;
+        requestParams: string;
+        getRequestParams: string;
+        userId: string;
+        status: number;
+        description: string;
+        createTime: string;
+        updateTime: string;
+        isDelete: number;
+    }
 }

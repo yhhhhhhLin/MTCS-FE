@@ -77,7 +77,7 @@
           </div>
           <div class="interfaces-list">
             <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
-                     :pagination="selectForm" size="small">
+                     :pagination="paginationProps" size="small">
               <template #optional="{ record }">
                 <a-link v-if="record.status === 0" @click="interfaceOnline(record.id)">上线</a-link>
                 <a-link v-else @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
@@ -437,16 +437,27 @@ let updateInterfaceInfo = reactive<any>({})
 let createInterfaceInfo = reactive<any>({})
 
 function handlerSearchSelfAllInterface() {
+  selectForm.pageSize=paginationProps.pageSize
+  selectForm.current=paginationProps.current
+
   selectSelfInterfaceListByPage(selectForm).then((res) => {
     // interfaceInfoLists.slice(0,...res.data.records)
     interfaceInfoLists.length = 0
     interfaceInfoLists.push(...res.data.records)
+    paginationProps.total = Number(res.data.total??0)
   }).catch((err) => {
     Message.error('获取接口信息失败')
     console.log(err)
   })
 
 }
+
+const paginationProps = reactive({
+  pageSize: 10,
+  current: 1,
+  total: 0,
+  showTotal: (total: number) => `总 ${total} 条`,
+})
 
 function handlerResetForm() {
   selectForm.current = 1;
