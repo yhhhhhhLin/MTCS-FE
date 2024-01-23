@@ -77,10 +77,11 @@
           </div>
           <div class="interfaces-list">
             <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
-                     :pagination="paginationProps" size="small">
+                     :pagination="paginationProps" @page-change="handlerTableChange" size="small">
               <template #optional="{ record }">
                 <a-link v-if="record.status === 0" @click="interfaceOnline(record.id)">上线</a-link>
-                <a-link v-else @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
+                <a-link v-else-if="record.status === 1" @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
+                <a-link v-else status="danger" disabled>无法修改状态</a-link>
               </template>
               <template #name="{ record }">
                 <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
@@ -143,6 +144,7 @@
                            @handlerSubmit="handlerCreateSubmit"
                            :okLoading="createOrUpdateOkLoading"
       ></CreateOrUpdateModal>
+
 
 
     </template>
@@ -415,8 +417,12 @@ const interfaceInfoColumns = [
       if (value?.record?.status === 1) {
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-processing'}), '   开启')
         // return h('a-badge', {status: 'processing'}, '可用')
-      } else {
+      } else if(value.record.status==0){
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-danger'}), ' 关闭')
+      }else if (value?.record?.status === 2) {
+        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color- #FF7D00',style:'background-color: rgb(255, 180, 0);'}), ' 审核中')
+      }else if(value?.record?.status === 3){
+        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color-#FF5722',style:'background-color: rgb(255, 87, 34);'}), ' 存在违规内容，重新提交')
       }
     }
   },
@@ -470,7 +476,7 @@ function handlerResetForm() {
   selectForm.status = null
 }
 
-function handlerSearchSelfInterface() {
+function handlerSearchSelfInterfaceAnalyze() {
   getInterfaceSelfAnalyze({total: 5, current: 1}).then((res) => {
     // 转为echarts格式
     const pieChartsData = res.data.map((item: any) => {
@@ -513,7 +519,7 @@ function handlerSearchSelfInterface() {
 onMounted(() => {
   // 获取所有接口信息
   handlerSearchSelfAllInterface()
-  handlerSearchSelfInterface()
+  handlerSearchSelfInterfaceAnalyze()
   Message.success('获取个人所有接口信息成功')
 })
 
@@ -563,7 +569,6 @@ function updateInterfaceCreateModalVisible(val: any) {
 }
 
 
-// TODO
 function updateInterfaceFun(val) {
   interfaceUpdateModalVisible.value = true
   updateInterfaceInfo = reactive({...interfaceDrawerDetail});
@@ -616,25 +621,31 @@ function handlerCreateSubmit(data) {
 
 // TODO 需要重新审核
 function handlerUpdateSubmit(data) {
-  console.log(data)
-  createOrUpdateOkLoading.value = true
-  interfaceInfoUpdate(updateInterfaceInfo)
-      .then((resp) => {
-        if (!resp.code) {
-          Message.success('更新接口成功')
-          handlerSearchSelfAllInterface()
-          interfaceDrawerDetail = reactive({...updateInterfaceInfo})
-          interfaceUpdateModalVisible.value = false
-        } else {
-          Message.error(resp.message)
-          console.log(resp)
-        }
-        createOrUpdateOkLoading.value = false
-      })
-      .catch((err) => {
-        Message.error('更新接口失败')
-        console.log(err)
-      })
+  Message.info('暂未实现')
+  // console.log(data)
+  // createOrUpdateOkLoading.value = true
+  // interfaceInfoUpdate(updateInterfaceInfo)
+  //     .then((resp) => {
+  //       if (!resp.code) {
+  //         Message.success('更新接口成功')
+  //         handlerSearchSelfAllInterface()
+  //         interfaceDrawerDetail = reactive({...updateInterfaceInfo})
+  //         interfaceUpdateModalVisible.value = false
+  //       } else {
+  //         Message.error(resp.message)
+  //         console.log(resp)
+  //       }
+  //       createOrUpdateOkLoading.value = false
+  //     })
+  //     .catch((err) => {
+  //       Message.error('更新接口失败')
+  //       console.log(err)
+  //     })
+}
+
+function handlerTableChange(data) {
+  paginationProps.current = data
+  handlerSearchSelfAllInterface()
 }
 
 

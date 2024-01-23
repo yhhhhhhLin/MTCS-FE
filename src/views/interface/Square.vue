@@ -60,7 +60,7 @@ import router from "../../router";
 
 const selectForm = reactive({
   current: 1,
-  pageSize: 10,
+  pageSize: 50,
   name: null,
   status: null
 })

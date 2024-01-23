@@ -71,10 +71,11 @@
           </div>
           <div class="interfaces-list">
             <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
-                     :pagination="paginationProps" size="small">
+                     :pagination="paginationProps" @page-change="handlerTableChange" size="small">
               <template #optional="{ record }">
                 <a-link v-if="record.status === 0" @click="interfaceOnline(record.id)">上线</a-link>
-                <a-link v-else @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
+                <a-link v-else-if="record.status === 1" @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
+                <a-link v-else status="danger" disabled >无法修改状态</a-link>
               </template>
               <template #name="{ record }">
                 <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
@@ -417,8 +418,12 @@ const interfaceInfoColumns = [
       if (value?.record?.status === 1) {
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-processing'}), '   开启')
         // return h('a-badge', {status: 'processing'}, '可用')
-      } else {
+      } else if(value.record.status==0){
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-danger'}), ' 关闭')
+      }else if (value?.record?.status === 2) {
+        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color- #FF7D00',style:'background-color: rgb(255, 180, 0);'}), ' 审核中')
+      }else if(value?.record?.status === 3){
+        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color-#FF5722',style:'background-color: rgb(255, 87, 34);'}), ' 违规')
       }
     }
   },
@@ -593,6 +598,12 @@ function handlerUpdateSubmit(data) {
       })
 }
 
+
+function handlerTableChange(data) {
+  paginationProps.current = data
+  handlerSearchAllInterface()
+
+}
 
 </script>
 

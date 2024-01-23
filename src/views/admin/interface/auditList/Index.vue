@@ -58,10 +58,23 @@
             <a-table row-key="id" :columns="interfaceInfoColumns" :data="interfaceInfoLists"
                      :pagination="paginationProps" @page-change="handlerTableChange" size="small">
               <template #optional="{ record }">
-                <a-link status="danger" v-if="record.status === 5 || record.status === 9"
-                        @click="handlerRejectInterfaceAudit(record.id)">拒绝
-                </a-link>
-                <a-link v-else @click="interfaceOffLine(record.id)">通过</a-link>
+                <!--                如果是被拒绝了，那么就只能是同意，如果是同意的那么就是拒绝，如果都不是，那么就可以拒绝也可以同意-->
+                <div class="pass-or-reject-btn">
+                  <div v-if="record.status === 5 || record.status === 9">
+                    <a-link status="danger"
+                            @click="handlerRejectInterfaceAudit(record.id)">拒绝
+                    </a-link>
+                  </div>
+                  <div v-else-if="record.status === 4">
+                    <a-link @click="passInterfaceAudit(record.id)">通过</a-link>
+                  </div>
+                  <div v-else>
+                    <a-link status="danger"
+                            @click="handlerRejectInterfaceAudit(record.id)">拒绝
+                    </a-link>
+                    <a-link @click="passInterfaceAudit(record.id)">通过</a-link>
+                  </div>
+                </div>
               </template>
               <template #name="{ record }">
                 <a-link @click="openInterfaceDetail(record.id)">{{ record.name }}</a-link>
@@ -81,11 +94,21 @@
           </div>
         </template>
         <template #footer>
-          <a-link status="danger" v-if="interfaceDrawerDetail.status===5 || interfaceDrawerDetail.status===9"
-                  @click="rejectTipsModalVisible = true">拒绝
-          </a-link>
-          <a-link v-else @click="rejectTipsModalVisible = true">通过</a-link>
 
+          <div v-if="interfaceDrawerDetail.status === 5 || interfaceDrawerDetail.status === 9">
+            <a-link status="danger"
+                    @click="handlerRejectInterfaceAudit(interfaceDrawerDetail.id)">拒绝
+            </a-link>
+          </div>
+          <div v-else-if="interfaceDrawerDetail.status === 4">
+            <a-link @click="passInterfaceAudit(interfaceDrawerDetail.id)">通过</a-link>
+          </div>
+          <div v-else>
+            <a-link status="danger"
+                    @click="handlerRejectInterfaceAudit(interfaceDrawerDetail.id)">拒绝
+            </a-link>
+            <a-link @click="passInterfaceAudit(interfaceDrawerDetail.id)">通过</a-link>
+          </div>
         </template>
 
         <a-descriptions>
@@ -116,52 +139,17 @@
 
 import Container from "../../../../components/Container.vue";
 import {onMounted, reactive, ref} from "vue";
-import {getAuditInterface, interfaceInfoDelete, updateInterfaceStatus,} from "../../../../services/interfaceInfo";
+import {
+  getAuditInterface,
+  updateAuditInterfaceStatus,
+  updateInterfaceStatus,
+} from "../../../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
-
 
 const interfaceDetailVisible = ref(false)
 const rejectTipsModalVisible = ref(false)
 const wantToRejectAuditId = ref()
 const rejectReason = ref("")
-
-function handlerRejectInterfaceAudit(id: number) {
-  wantToRejectAuditId.value = id
-  rejectTipsModalVisible.value = true
-
-}
-
-const paginationProps = reactive({
-  pageSize: 10,
-  current: 1,
-  total: 0,
-  showTotal: (total: number) => `总 ${total} 条`,
-})
-
-function handlerTableChange(data){
-  paginationProps.current = data
-  handlerSearchAllAuditInterface()
-}
-
-function interfaceOffLine(id: number) {
-  updateInterfaceStatus({interfaceId: id, status: 0}).then((resp) => {
-    if (!resp.code) {
-      Message.success("操作成功")
-      // 查询获取所有接口信息
-      handlerSearchAllAuditInterface()
-    } else {
-      Message.error(resp.message)
-      console.log(resp)
-    }
-
-  }).catch((err) => {
-    Message.error(err.message)
-    console.log(err)
-  })
-
-}
-
-
 const selectForm = reactive({
   current: 1,
   pageSize: 10,
@@ -173,8 +161,6 @@ const selectForm = reactive({
   status: null
 })
 const interfaceInfoLists = reactive<API.AuditInterfaceInfo[]>([])
-
-const fieldNames = {value: 'value', label: 'text'}
 let interfaceDrawerDetail = reactive<any>({
   name: '',
   method: '',
@@ -190,7 +176,6 @@ let interfaceDrawerDetail = reactive<any>({
   userId: '',
   createTime: '',
 })
-
 const interfaceStatusOptions = reactive<any[]>([
   {
     value: '1',
@@ -226,6 +211,131 @@ const mapStatus = new Map([
   [5, '人工审核通过(待发布)'],
   [9, '已经发布']
 ])
+const fieldNames = {value: 'value', label: 'text'}
+
+
+onMounted(() => {
+  // 获取所有接口信息
+  handlerSearchAllAuditInterface()
+  Message.success('获取接口信息成功')
+})
+
+function handlerRejectInterfaceAudit(id: number) {
+  wantToRejectAuditId.value = id
+  rejectTipsModalVisible.value = true
+
+}
+
+const paginationProps = reactive({
+  pageSize: 10,
+  current: 1,
+  total: 0,
+  showTotal: (total: number) => `总 ${total} 条`,
+})
+
+function handlerTableChange(data) {
+  paginationProps.current = data
+  handlerSearchAllAuditInterface()
+}
+
+function interfaceOffLine(id: number) {
+  updateInterfaceStatus({interfaceId: id, status: 0}).then((resp) => {
+    if (!resp.code) {
+      Message.success("操作成功")
+      // 查询获取所有接口信息
+      handlerSearchAllAuditInterface()
+    } else {
+      Message.error(resp.message)
+      console.log(resp)
+    }
+
+  }).catch((err) => {
+    Message.error(err.message)
+    console.log(err)
+  })
+
+}
+
+
+function handlerSearchAllAuditInterface() {
+  selectForm.pageSize = paginationProps.pageSize
+  selectForm.current = paginationProps.current
+
+  getAuditInterface(selectForm).then((res) => {
+    // interfaceInfoLists.slice(0,...res.data.records)
+    interfaceInfoLists.length = 0
+    interfaceInfoLists.push(...res.data.records)
+    paginationProps.total = res.data.total
+  }).catch((err) => {
+    Message.error('获取接口信息失败')
+    console.log(err)
+  })
+
+}
+
+function handlerResetForm() {
+  selectForm.current = 1;
+  selectForm.pageSize = 10;
+  selectForm.name = null;
+  selectForm.method = null;
+  selectForm.apiDescription = null;
+  selectForm.uri = null;
+  selectForm.host = null;
+  selectForm.status = null
+}
+
+
+function openInterfaceDetail(interfaceInfoId: string) {
+  interfaceInfoLists.forEach(interfaceInfo => {
+    if (interfaceInfo.id === interfaceInfoId) {
+      interfaceDrawerDetail = interfaceInfo
+    }
+  })
+  interfaceDetailVisible.value = true
+}
+
+function handleDrawerCancel() {
+  interfaceDetailVisible.value = false
+}
+
+
+function handleRejectTipsModalCancel() {
+  rejectTipsModalVisible.value = false
+  rejectReason.value = ''
+}
+
+// TODO
+function handleRejectAuditTipsModalOk() {
+  updateAuditInterfaceStatus({auditId: wantToRejectAuditId.value, status: 4,description: rejectReason.value}).then((resp) => {
+    if(!resp.code){
+      Message.success("操作成功")
+    }else{
+      Message.error(resp.message)
+    }
+  }).catch((err)=>{
+    Message.error(err.message)
+    console.log(err)
+  }).finally(()=>{
+    rejectTipsModalVisible.value = false
+    rejectReason.value = ''
+    handlerSearchAllAuditInterface()
+  })
+}
+
+function passInterfaceAudit(id:number) {
+  updateAuditInterfaceStatus({auditId: id, status: 5}).then((resp) => {
+    if(!resp.code){
+      Message.success("操作成功")
+    }else{
+      Message.error(resp.message)
+    }
+  }).catch((err)=>{
+    Message.error(err.message)
+    console.log(err)
+  }).finally(()=>{
+    handlerSearchAllAuditInterface()
+  })
+}
 
 const interfaceInfoDrawerColumns: any[] = [
   {
@@ -303,7 +413,7 @@ const interfaceInfoColumns = [
   {
     title: '审核建议',
     dataIndex: 'description',
-    width: 510
+    width: 470
   },
   {
     title: '接口状态',
@@ -316,78 +426,10 @@ const interfaceInfoColumns = [
   {
     title: '操作',
     slotName: 'optional',
-    width: 70
+    width: 120
 
   }
 ]
-
-
-function handlerSearchAllAuditInterface() {
-  selectForm.pageSize = paginationProps.pageSize
-  selectForm.current = paginationProps.current
-
-  getAuditInterface(selectForm).then((res) => {
-    // interfaceInfoLists.slice(0,...res.data.records)
-    interfaceInfoLists.length = 0
-    interfaceInfoLists.push(...res.data.records)
-    paginationProps.total = res.data.total
-  }).catch((err) => {
-    Message.error('获取接口信息失败')
-    console.log(err)
-  })
-
-}
-
-function handlerResetForm() {
-  selectForm.current = 1;
-  selectForm.pageSize = 10;
-  selectForm.name = null;
-  selectForm.method = null;
-  selectForm.apiDescription = null;
-  selectForm.uri = null;
-  selectForm.host = null;
-  selectForm.status = null
-
-}
-
-
-onMounted(() => {
-  // 获取所有接口信息
-  handlerSearchAllAuditInterface()
-  Message.success('获取接口信息成功')
-})
-
-function openInterfaceDetail(interfaceInfoId: string) {
-  interfaceInfoLists.forEach(interfaceInfo => {
-    if (interfaceInfo.id === interfaceInfoId) {
-      interfaceDrawerDetail = interfaceInfo
-    }
-  })
-  interfaceDetailVisible.value = true
-}
-
-function handleDrawerCancel() {
-  interfaceDetailVisible.value = false
-}
-
-function handleRejectAuditTipsModalOk() {
-  console.log(rejectReason.value+'  '+wantToRejectAuditId.value);
-}
-
-function handleRejectTipsModalCancel() {
-  rejectTipsModalVisible.value = false
-  rejectReason.value = ''
-}
-
-
-function handlerExportInterface() {
-  Message.info('暂未实现')
-}
-
-function passInterfaceAudit() {
-  Message.info('暂未实现')
-}
-
 
 </script>
 
@@ -457,6 +499,10 @@ function passInterfaceAudit() {
 
 .ope-btn {
   margin-right: 10px;
+}
+
+.pass-or-reject-btn {
+  display: flex;
 }
 
 
