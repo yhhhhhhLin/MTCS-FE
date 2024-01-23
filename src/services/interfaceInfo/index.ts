@@ -34,3 +34,19 @@ export function getInterfaceExperience(interfaceInfoId: any) {
 export function updateInterfaceStatus(dto: API.UpdateStatusDto) {
     return put('/main/interfaceInfo/updateStatus',dto)
 }
+
+export function selectSelfInterfaceListByPage(params: any) {
+    return get<API.pageResult<API.InterfaceInfo>>('/main/interfaceInfo/self',params)
+}
+
+export function userInterfaceInfoAdd(data: any) {
+    return post<string>('/audit/audit/interface',data)
+}
+
+export function getInterfaceAllAnalyze(data:any){
+    return get('/main/analyze/all',data)
+}
+
+export function getInterfaceSelfAnalyze(data:any){
+    return get('/main/analyze/self',data)
+}

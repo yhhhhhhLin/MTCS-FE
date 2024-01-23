@@ -50,7 +50,7 @@ export const routes: any = [
     {
         path: '/myInterface',
         name: '我发布的接口',
-        component: () => import('../views/interface/list.vue'),
+        component: () => import('../views/interface/SelfList.vue'),
         meta: {
             // 是否保存到菜单栏
             fixedNav: true,

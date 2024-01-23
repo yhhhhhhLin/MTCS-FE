@@ -1,7 +1,13 @@
 <template>
-  <Container :navbarDefault="'/admin/interfaceList'">
+  <Container :navbarDefault="'/myInterface'">
     <template v-slot:content>
       <a-card class="interfaces-card">
+        <div class="interface-analyze-card">
+          <div>
+            <div ref="selfChart" id="selfChart" style="width: 100%; height: 250px;"></div>
+          </div>
+          <a-divider></a-divider>
+        </div>
         <div class="select-form-card">
           <div class="select-form">
             <a-form :model="selectForm" layout="inline" label-align="left">
@@ -37,7 +43,7 @@
           </div>
           <a-divider direction="vertical"/>
           <div class="select-form-button">
-            <a-button type="primary" @click="handlerSearchAllInterface">
+            <a-button type="primary" @click="handlerSearchSelfAllInterface">
               <template #icon>
                 <icon-search/>
               </template>
@@ -147,53 +153,54 @@
 
 <script setup lang="ts">
 
-import Container from "../../../../components/Container.vue";
+import Container from "../../components/Container.vue";
 import {h, onMounted, reactive, ref} from "vue";
 import {
-  adminInterfaceInfoAdd,
-  getInterfaceList,
+  adminInterfaceInfoAdd, getInterfaceSelfAnalyze,
   interfaceInfoDelete,
-  interfaceInfoUpdate, updateInterfaceStatus,
-} from "../../../../services/interfaceInfo";
+  interfaceInfoUpdate,
+  selectSelfInterfaceListByPage,
+  updateInterfaceStatus, userInterfaceInfoAdd,
+} from "../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
-import CreateOrUpdateModal from "../../../../components/CreateOrUpdateModal.vue";
+import CreateOrUpdateModal from "../../components/CreateOrUpdateModal.vue";
+import * as echarts from 'echarts';
 
-function interfaceOnline(id:number){
-  updateInterfaceStatus({interfaceId:id, status:1}).then((resp)=>{
-    if(!resp.code){
+function interfaceOnline(id: number) {
+  updateInterfaceStatus({interfaceId: id, status: 1}).then((resp) => {
+    if (!resp.code) {
       Message.success("操作成功")
       // 查询获取所有接口信息
-      handlerSearchAllInterface()
-    }else{
+      handlerSearchSelfAllInterface()
+    } else {
       Message.error(resp.message)
       console.log(resp)
     }
 
-  }).catch((err)=>{
+  }).catch((err) => {
     Message.error(err.message)
     console.log(err)
   })
 
 }
 
-function interfaceOffLine(id:number){
-  updateInterfaceStatus({interfaceId:id, status:0}).then((resp)=>{
-    if(!resp.code){
+function interfaceOffLine(id: number) {
+  updateInterfaceStatus({interfaceId: id, status: 0}).then((resp) => {
+    if (!resp.code) {
       Message.success("操作成功")
       // 查询获取所有接口信息
-      handlerSearchAllInterface()
-    }else{
+      handlerSearchSelfAllInterface()
+    } else {
       Message.error(resp.message)
       console.log(resp)
     }
 
-  }).catch((err)=>{
+  }).catch((err) => {
     Message.error(err.message)
     console.log(err)
   })
 
 }
-
 
 
 const selectForm = reactive({
@@ -269,7 +276,7 @@ const interfaceInfoUpdateOrCreateModalColumns: any[] = [
   },
   {
     label: '接口描述',
-    dataIndex: 'description',
+    dataIndex: 'apiDescription',
     placeholder: '请输入接口描述',
     type: 'textarea',
   },
@@ -429,12 +436,11 @@ const createOrUpdateOkLoading = ref(false)
 let updateInterfaceInfo = reactive<any>({})
 let createInterfaceInfo = reactive<any>({})
 
-function handlerSearchAllInterface() {
-  getInterfaceList(selectForm).then((res) => {
+function handlerSearchSelfAllInterface() {
+  selectSelfInterfaceListByPage(selectForm).then((res) => {
     // interfaceInfoLists.slice(0,...res.data.records)
     interfaceInfoLists.length = 0
     interfaceInfoLists.push(...res.data.records)
-    Message.success('获取接口信息成功')
   }).catch((err) => {
     Message.error('获取接口信息失败')
     console.log(err)
@@ -451,14 +457,53 @@ function handlerResetForm() {
   selectForm.uri = null;
   selectForm.host = null;
   selectForm.status = null
-
 }
 
+function handlerSearchSelfInterface() {
+  getInterfaceSelfAnalyze({total: 5, current: 1}).then((res) => {
+    // 转为echarts格式
+    const pieChartsData = res.data.map((item: any) => {
+      return {
+        name: item.name,
+        value: item.allNum
+      }
+    })
+    console.log(pieChartsData)
+    echarts.init(document.getElementById("selfChart")).setOption({
+          title: {
+            text: '调用次数前5接口',
+            // subtext: 'Fake Data',
+            left: 'center'
+          },
+          tooltip: {
+            trigger: 'item'
+          },
+          legend: {
+            orient: 'vertical',
+            left: 'left'
+          },
+          series: [{
+            type: 'pie',
+            radius: '50%',
+            data: pieChartsData,
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            }
+          }],
+        }
+    )
+  })
+}
 
 onMounted(() => {
   // 获取所有接口信息
-  handlerSearchAllInterface()
-  Message.success('获取接口信息成功')
+  handlerSearchSelfAllInterface()
+  handlerSearchSelfInterface()
+  Message.success('获取个人所有接口信息成功')
 })
 
 function openInterfaceDetail(interfaceInfoId: string) {
@@ -477,12 +522,12 @@ function handleDrawerCancel() {
 function handleDeleteTipsModalOk() {
   interfaceInfoDelete({id: interfaceDrawerDetail.id})
       .then(resp => {
-        if(!resp.code){
+        if (!resp.code) {
           Message.success('删除接口成功')
           deleteTipsModalVisible.value = false
-          interfaceDetailVisible.value=false
-          handlerSearchAllInterface()
-        }else{
+          interfaceDetailVisible.value = false
+          handlerSearchSelfAllInterface()
+        } else {
           Message.error(resp.message)
           console.log(resp)
         }
@@ -490,7 +535,8 @@ function handleDeleteTipsModalOk() {
       .catch((err) => {
         Message.error('删除接口失败')
         console.log(err)
-      })}
+      })
+}
 
 function handleDeleteTipsModalCancel() {
   deleteTipsModalVisible.value = false
@@ -506,9 +552,11 @@ function updateInterfaceCreateModalVisible(val: any) {
 }
 
 
+// TODO
 function updateInterfaceFun(val) {
   interfaceUpdateModalVisible.value = true
   updateInterfaceInfo = reactive({...interfaceDrawerDetail});
+  updateInterfaceInfo.apiDescription = interfaceDrawerDetail.description
 }
 
 function handlerAddInterface() {
@@ -522,7 +570,7 @@ function handlerExportInterface() {
 
 function initInterfaceInfo() {
   createInterfaceInfo.name = ''
-  createInterfaceInfo.description = ''
+  createInterfaceInfo.apiDescription = ''
   createInterfaceInfo.method = ''
   createInterfaceInfo.host = ''
   createInterfaceInfo.uri = ''
@@ -537,15 +585,13 @@ function initInterfaceInfo() {
 
 function handlerCreateSubmit(data) {
   createOrUpdateOkLoading.value = true
-  adminInterfaceInfoAdd(createInterfaceInfo)
+  userInterfaceInfoAdd(createInterfaceInfo)
       .then(resp => {
-        if(!resp.code){
-          Message.success('创建接口成功')
-          handlerSearchAllInterface()
+        if (!resp.code) {
+          Message.success(resp.data)
           interfaceCreateModalVisible.value = false
-          // todo 将数据清空
           initInterfaceInfo()
-        }else{
+        } else {
           Message.error(resp.message)
           console.log(resp)
         }
@@ -555,9 +601,9 @@ function handlerCreateSubmit(data) {
         Message.error('创建接口失败')
         console.log(err)
       })
-
 }
 
+// TODO 需要重新审核
 function handlerUpdateSubmit(data) {
   console.log(data)
   createOrUpdateOkLoading.value = true
@@ -565,7 +611,7 @@ function handlerUpdateSubmit(data) {
       .then((resp) => {
         if (!resp.code) {
           Message.success('更新接口成功')
-          handlerSearchAllInterface()
+          handlerSearchSelfAllInterface()
           interfaceDrawerDetail = reactive({...updateInterfaceInfo})
           interfaceUpdateModalVisible.value = false
         } else {
