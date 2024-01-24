@@ -416,6 +416,7 @@ const interfaceInfoColumns = [
     dataIndex: 'status',
     render: (value: any) => {
       if (value?.record?.status === 1) {
+
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-processing'}), '   开启')
         // return h('a-badge', {status: 'processing'}, '可用')
       } else if(value.record.status==0){

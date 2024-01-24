@@ -51,6 +51,10 @@ export function updateAuditInterfaceStatus(data: any) {
     return post('/audit/audit/interface/status',data)
 }
 
+export function updateAuditInterfaceInfo(data: any) {
+    return put('/audit/audit/interface',data)
+}
+
 export function getInterfaceAllAnalyze(data:any){
     return get('/main/analyze/all',data)
 }

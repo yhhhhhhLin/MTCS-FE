@@ -80,7 +80,8 @@
                      :pagination="paginationProps" @page-change="handlerTableChange" size="small">
               <template #optional="{ record }">
                 <a-link v-if="record.status === 0" @click="interfaceOnline(record.id)">上线</a-link>
-                <a-link v-else-if="record.status === 1" @click="interfaceOffLine(record.id)" status="danger">下线</a-link>
+                <a-link v-else-if="record.status === 1" @click="interfaceOffLine(record.id)" status="danger">下线
+                </a-link>
                 <a-link v-else status="danger" disabled>无法修改状态</a-link>
               </template>
               <template #name="{ record }">
@@ -100,7 +101,9 @@
             </div>
             <div class="drawer-title-opt">
               <a-link status="danger" @click="deleteTipsModalVisible = true">删除</a-link>
-              <a-link @click="updateInterfaceFun">修改</a-link>
+              <a-popconfirm content="修改后需要重新审核哦！" @ok="updateInterfaceFun">
+                <a-link>修改</a-link>
+              </a-popconfirm>
             </div>
 
           </div>
@@ -146,7 +149,6 @@
       ></CreateOrUpdateModal>
 
 
-
     </template>
 
   </Container>
@@ -161,7 +163,7 @@ import {
   adminInterfaceInfoAdd, getInterfaceSelfAnalyze,
   interfaceInfoDelete,
   interfaceInfoUpdate,
-  selectSelfInterfaceListByPage,
+  selectSelfInterfaceListByPage, updateAuditInterfaceInfo,
   updateInterfaceStatus, userInterfaceInfoAdd,
 } from "../../services/interfaceInfo";
 import {Message} from "@arco-design/web-vue";
@@ -417,12 +419,18 @@ const interfaceInfoColumns = [
       if (value?.record?.status === 1) {
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-processing'}), '   开启')
         // return h('a-badge', {status: 'processing'}, '可用')
-      } else if(value.record.status==0){
+      } else if (value.record.status == 0) {
         return h('span', {class: 'interface-status'}, h('span', {class: 'interface-status arco-badge-status-dot arco-badge-status-danger'}), ' 关闭')
-      }else if (value?.record?.status === 2) {
-        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color- #FF7D00',style:'background-color: rgb(255, 180, 0);'}), ' 审核中')
-      }else if(value?.record?.status === 3){
-        return h('span', {class: 'interface-status'}, h('span', {class: 'arco-badge-status-dot arco-badge-color-#FF5722',style:'background-color: rgb(255, 87, 34);'}), ' 存在违规内容，重新提交')
+      } else if (value?.record?.status === 2) {
+        return h('span', {class: 'interface-status'}, h('span', {
+          class: 'arco-badge-status-dot arco-badge-color- #FF7D00',
+          style: 'background-color: rgb(255, 180, 0);'
+        }), ' 审核中')
+      } else if (value?.record?.status === 3) {
+        return h('span', {class: 'interface-status'}, h('span', {
+          class: 'arco-badge-status-dot arco-badge-color-#FF5722',
+          style: 'background-color: rgb(255, 87, 34);'
+        }), ' 存在违规内容，重新提交')
       }
     }
   },
@@ -443,14 +451,14 @@ let updateInterfaceInfo = reactive<any>({})
 let createInterfaceInfo = reactive<any>({})
 
 function handlerSearchSelfAllInterface() {
-  selectForm.pageSize=paginationProps.pageSize
-  selectForm.current=paginationProps.current
+  selectForm.pageSize = paginationProps.pageSize
+  selectForm.current = paginationProps.current
 
   selectSelfInterfaceListByPage(selectForm).then((res) => {
     // interfaceInfoLists.slice(0,...res.data.records)
     interfaceInfoLists.length = 0
     interfaceInfoLists.push(...res.data.records)
-    paginationProps.total = Number(res.data.total??0)
+    paginationProps.total = Number(res.data.total ?? 0)
   }).catch((err) => {
     Message.error('获取接口信息失败')
     console.log(err)
@@ -569,7 +577,7 @@ function updateInterfaceCreateModalVisible(val: any) {
 }
 
 
-function updateInterfaceFun(val) {
+function updateInterfaceFun() {
   interfaceUpdateModalVisible.value = true
   updateInterfaceInfo = reactive({...interfaceDrawerDetail});
   updateInterfaceInfo.apiDescription = interfaceDrawerDetail.description
@@ -621,27 +629,22 @@ function handlerCreateSubmit(data) {
 
 // TODO 需要重新审核
 function handlerUpdateSubmit(data) {
-  Message.info('暂未实现')
-  // console.log(data)
-  // createOrUpdateOkLoading.value = true
-  // interfaceInfoUpdate(updateInterfaceInfo)
-  //     .then((resp) => {
-  //       if (!resp.code) {
-  //         Message.success('更新接口成功')
-  //         handlerSearchSelfAllInterface()
-  //         interfaceDrawerDetail = reactive({...updateInterfaceInfo})
-  //         interfaceUpdateModalVisible.value = false
-  //       } else {
-  //         Message.error(resp.message)
-  //         console.log(resp)
-  //       }
-  //       createOrUpdateOkLoading.value = false
-  //     })
-  //     .catch((err) => {
-  //       Message.error('更新接口失败')
-  //       console.log(err)
-  //     })
+  createOrUpdateOkLoading.value = true
+  updateAuditInterfaceInfo(data).then((resp) => {
+    console.log(resp)
+    if (!resp.code) {
+      Message.info('更新接口成功,等待审核...')
+      interfaceUpdateModalVisible.value = false
+    } else {
+      Message.error(resp.message)
+    }
+    createOrUpdateOkLoading.value = false
+  }).catch((err) => {
+    Message.error('更新接口失败')
+    console.log(err)
+  })
 }
+
 
 function handlerTableChange(data) {
   paginationProps.current = data

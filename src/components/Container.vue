@@ -71,7 +71,6 @@ const props = defineProps({
   navbarDefault: String
 })
 onMounted(() => {
-  const userStore = userinfoStore.user;
   if (userinfoStore.user.id) {
     isLogin.value = true
     return
@@ -101,7 +100,7 @@ function logoutHandler() {
 }
 
 
-const containerOnCollapse = (val, type) => {
+const containerOnCollapse = () => {
   if (gridCols.value === '17% 1fr') {
     gridCols.value = '5% 1fr';
   } else {
