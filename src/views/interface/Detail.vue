@@ -56,10 +56,9 @@
                     </a-form-item>
                   </a-form>
                   <div>
-                    <a-button shape="circle">
+                    <a-button shape="circle" @click="handleAdd">
                       <icon-plus/>
                     </a-button>
-                    <!--                    <a-button @click="handleAdd" type="primary">添加get请求参数</a-button>-->
                   </div>
                 </div>
               </div>
