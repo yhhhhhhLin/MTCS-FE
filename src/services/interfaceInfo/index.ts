@@ -62,3 +62,8 @@ export function getInterfaceAllAnalyze(data:any){
 export function getInterfaceSelfAnalyze(data:any){
     return get('/main/analyze/self',data)
 }
+
+export function getInterfaceBusinessList(data:any){
+    return get('/main/user/business-list',data)
+
+}

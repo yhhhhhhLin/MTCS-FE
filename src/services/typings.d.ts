@@ -27,6 +27,7 @@ declare namespace API {
         gender: number
         accessKey: string
         secretKey: string
+        credits: number
     }
 
 
@@ -109,5 +110,35 @@ declare namespace API {
         createTime: string;
         updateTime: string;
         isDelete: number;
+    }
+
+    type UserProfileVO = {
+        id: number;
+        self: boolean;
+        userName: string;
+        userAvatar: string;
+        gender: number | null;
+        createTime: string;
+        canUseInterfaceNum: string;
+        interfaceTransferNum: string;
+    }
+
+    type InterfaceInfoVO = {
+        id: number;
+        name: string;
+        method: string;
+        requestParams: string;
+        getRequestParams: string;
+        pointsRequired: number;
+        description: string;
+        uri: string;
+        host: string;
+        requestHeader: string;
+        responseHeader: string;
+        status: number;
+        userId: number;
+        createTime: Date;
+        updateTime: Date;
+        allNum: number;
     }
 }

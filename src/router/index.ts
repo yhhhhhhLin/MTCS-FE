@@ -37,6 +37,16 @@ export const routes: any = [
         }
     },
     {
+        path: '/user/:account',
+        name: '用户信息',
+        component: () => import('../views/user/UserInfo.vue'),
+    },
+    {
+        path: '/user/updateInfo',
+        name: '更新用户信息',
+        component: () => import('../views/user/UpdateInfo.vue'),
+    },
+    {
         path: '/interface/square',
         name: '接口广场',
         component: () => import('../views/interface/Square.vue'),

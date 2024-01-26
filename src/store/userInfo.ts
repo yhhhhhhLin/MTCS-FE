@@ -14,7 +14,8 @@ export const useUserInfoStore = defineStore('user', () => {
         'gender': 0,
         'accessKey': '',
         'secretKey': '',
-        'unReadMsgCount': 0
+        'unReadMsgCount': 0,
+        'credits': 0
     })
 
     const storeGetUserInfo = async () => {
@@ -33,6 +34,8 @@ export const useUserInfoStore = defineStore('user', () => {
             user.gender = userInfo.gender
             user.accessKey = userInfo.accessKey
             user.secretKey = userInfo.secretKey
+            user.credits = userInfo.credits
+
             // TODO 设置实际未读消息数量
             user.unReadMsgCount = 9
             return
@@ -55,6 +58,7 @@ export const useUserInfoStore = defineStore('user', () => {
         user.accessKey = ''
         user.secretKey = ''
         user.unReadMsgCount = 0
+        user.credits = 0
     }
 
 

@@ -154,7 +154,7 @@ function loginHandler() {
 
   .main-content {
     height: 100%;
-    width: 70%;
+    width: calc(100% - 380px);
   }
 
   .right-content {
@@ -164,16 +164,17 @@ function loginHandler() {
     flex-direction: column;
     gap: 30px;
     height: 100%;
-    width: 25%;
+    width: 390px;
 
     .right-top {
       height: 40%;
       overflow: hidden;
+      margin-right: 10px;
     }
 
     .right-end {
       height: 40%;
-
+      margin-right: 10px;
     }
   }
 }

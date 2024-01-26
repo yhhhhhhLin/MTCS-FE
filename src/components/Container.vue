@@ -14,10 +14,21 @@
                 <img alt="avatar" v-bind:src="userinfoStore.user.userAvatar"/>
               </a-avatar>
               <template #content>
-                <a-doption @click="Message.info('暂未实现')">个人中心</a-doption>
-                <a-doption @click="Message.info('暂未实现')">获取sdk</a-doption>
+                <div class="avatar-box-user-name-credits">
+                  <div class="name">
+                    名称： {{userinfoStore.user.userName}}
+                  </div>
+<!--                  <div class="credits">-->
+<!--                    积分： {{userinfoStore.user.credits}}-->
+<!--                  </div>-->
+                </div>
                 <a-divider margin="0"/>
-                <a-doption @click="logoutHandler">退出登录</a-doption>
+                <div class="avatar-box-opt">
+                  <a-doption @click="handlerPushToUserInfo()">个人中心</a-doption>
+                  <a-doption @click="Message.info('暂未实现')">获取sdk</a-doption>
+                  <a-divider margin="0"/>
+                  <a-doption @click="logoutHandler">退出登录</a-doption>
+                </div>
               </template>
             </a-dropdown>
           </div>
@@ -83,6 +94,10 @@ onMounted(() => {
 
 })
 
+function handlerPushToUserInfo(){
+  router.push('/user/'+userinfoStore.user.userAccount)
+}
+
 
 
 
@@ -102,7 +117,7 @@ function logoutHandler() {
 
 const containerOnCollapse = () => {
   if (gridCols.value === '17% 1fr') {
-    gridCols.value = '5% 1fr';
+    gridCols.value = '2.5% 1fr';
   } else {
     gridCols.value = '17% 1fr';
   }
@@ -119,7 +134,7 @@ const gridCols = ref('17% 1fr');
   width: 100%;
   display: grid;
   grid-template-areas: "header header header" "sidebar content content";
-  grid-template-rows: 8% 1fr;
+  grid-template-rows: 7% 1fr;
 }
 
 .logo {
@@ -161,7 +176,7 @@ const gridCols = ref('17% 1fr');
   position: fixed;
   width: 17%;
   height: 92.3%;
-  margin-top: 55px;
+  margin-top: 65px;
 }
 
 .navbar-content {
@@ -173,7 +188,7 @@ const gridCols = ref('17% 1fr');
 .arco-layout-content {
   background-color: #f5f5f5;
   grid-area: content;
-  padding: 30px 30px 0 30px;
+  padding: 25px 30px 30px 20px;
 }
 
 .arco-btn-size-medium {
@@ -184,5 +199,18 @@ const gridCols = ref('17% 1fr');
   display: flex;
   gap: 15px;
 }
+
+.avatar-box-user-name-credits{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 10px 0;
+  gap: 20px;
+}
+
+.avatar-box-opt{
+  width: 150px;
+}
+
 
 </style>
