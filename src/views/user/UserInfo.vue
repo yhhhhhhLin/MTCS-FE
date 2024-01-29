@@ -6,7 +6,7 @@
           <a-card>
             <div class="profile-header-card">
               <div class="profile-header-avatar">
-                <a-avatar :size="84" :image-url="userProfile.userAvatar">Arco</a-avatar>
+                <a-avatar :size="84" :image-url="userInfoStore.user.avaData">Arco</a-avatar>
 
               </div>
               <div class="profile-header-other">
@@ -104,11 +104,13 @@ import router from "../../router";
 import {Message} from "@arco-design/web-vue";
 import {getUserProfile} from "../../services/user";
 import {getInterfaceBusinessList} from "../../services/interfaceInfo";
+import {useUserInfoStore} from "../../store/userInfo.ts";
 
 
 
 const pageOptions = reactive({page: 1, size: 10})
 const interfaceList = reactive<API.InterfaceInfoVO[]>([])
+const userInfoStore = useUserInfoStore()
 
 
 async function handlerGetUserProfile(userAccount) {

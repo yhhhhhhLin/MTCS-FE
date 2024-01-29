@@ -1,8 +1,9 @@
 import {defineStore} from "pinia";
 import {reactive} from "vue";
-import {getUserInfo} from "../services/user";
+import {getAvatarPath, getUserInfo} from "../services/user";
 import {Message} from "@arco-design/web-vue";
 import router from "../router";
+import instance from "../request/instance.ts";
 
 export const useUserInfoStore = defineStore('user', () => {
     const user = reactive({
@@ -14,6 +15,7 @@ export const useUserInfoStore = defineStore('user', () => {
         'gender': 0,
         'accessKey': '',
         'secretKey': '',
+        'avaData': '',
         'unReadMsgCount': 0,
         'credits': 0
     })
@@ -38,6 +40,18 @@ export const useUserInfoStore = defineStore('user', () => {
 
             // TODO 设置实际未读消息数量
             user.unReadMsgCount = 9
+
+            instance.get(getAvatarPath, {responseType: 'arraybuffer'})
+                .then(response => {
+                    const base64Image = btoa(
+                        new Uint8Array(response.data)
+                            .reduce((data, byte) => data + String.fromCharCode(byte), '')
+                    );
+                    user.avaData = `data:${response.headers['content-type']};base64,${base64Image}`;
+                })
+                .catch(error => {
+                    console.error('出错', error);
+                });
             return
         } else if(res.code === 401) {
             localStorage.removeItem('token')

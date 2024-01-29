@@ -12,9 +12,7 @@ export function getUserInfo()  {
     return get<API.UserInfo>('/main/user/get/login')
 }
 
-export function getUserAvatar()  {
-    return get('/main/user/get/login/avatar')
-}
+export const getAvatarPath = '/main/user/get/login/avatar'
 
 export function getUserProfile(account: string) {
     return get<API.UserProfileVO>('/main/user/profile/'+account)

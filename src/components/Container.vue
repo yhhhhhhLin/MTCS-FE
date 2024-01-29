@@ -10,8 +10,9 @@
         <a-space class="headerBox" v-if="userinfoStore.user.id">
           <div class="avatarBox">
             <a-dropdown trigger="hover">
-              <a-avatar :size="32">
-                <img alt="avatar" v-bind:src="userinfoStore.user.userAvatar"/>
+              <a-avatar
+                  :size="32"
+                  :image-url="userinfoStore.user.avaData">
               </a-avatar>
               <template #content>
                 <div class="avatar-box-user-name-credits">
@@ -73,6 +74,8 @@ import {onMounted, ref} from "vue";
 import {useUserInfoStore} from "../store/userInfo.ts";
 import {Message} from "@arco-design/web-vue";
 import router, {routerWhitelist} from "../router";
+import instance from "../request/instance.ts";
+import {getAvatarPath} from "../services/user";
 
 const userinfoStore = useUserInfoStore()
 const isLogin = ref(false)
@@ -86,10 +89,10 @@ onMounted(() => {
     isLogin.value = true
     return
   }
-
   // 如果没有登录,那么获取token,然后获取用户信息
   if (token.value) {
     userinfoStore.storeGetUserInfo()
+    // 获取头像
   }
 
 })
