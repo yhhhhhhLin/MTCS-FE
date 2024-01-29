@@ -21,3 +21,7 @@ export function getUserProfile(account: string) {
 export function updateAvatar(avatar: any) {
     return post('/main/user/update/avatar', avatar)
 }
+
+export function refreshAkSk(){
+    return get('/main/user/updateak')
+}

@@ -20,6 +20,11 @@ export const useUserInfoStore = defineStore('user', () => {
         'credits': 0
     })
 
+    const updateUserInfo = async ()=>{
+        clearUserInfo()
+        await storeGetUserInfo()
+    }
+
     const storeGetUserInfo = async () => {
         if (user.id) {
             return
@@ -76,5 +81,5 @@ export const useUserInfoStore = defineStore('user', () => {
     }
 
 
-    return {user, storeGetUserInfo,clearUserInfo}
+    return {user, storeGetUserInfo,clearUserInfo,updateUserInfo}
 })
