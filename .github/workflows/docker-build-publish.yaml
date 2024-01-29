@@ -1,8 +1,9 @@
 name: Docker Build and Publish
 on:
+  push:
+    branches: [ "master" ]
   pull_request:
-    branches:
-      - master
+    branches: [ "master" ]
 
 jobs:
   build-and-publish:
@@ -26,5 +27,5 @@ jobs:
         env:
           DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         run: |
-          docker tag mtcs-fe:latest $DOCKER_USERNAME/mtcs-fe:latest
-          docker push $DOCKER_USERNAME/mtcs-fe:latest
+          docker tag mtcs-fe:latest ${{ secrets.DOCKER_USERNAME_PRE }}/mtcs-fe:latest
+          docker push ${{ secrets.DOCKER_USERNAME_PRE }}/mtcs-fe:latest
