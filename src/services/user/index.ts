@@ -18,6 +18,10 @@ export function getUserProfile(account: string) {
     return get<API.UserProfileVO>('/main/user/profile/'+account)
 }
 
+export function updateUserInfo(userInfo: API.UserInfo){
+    return post('/main/user/userupdate',userInfo)
+}
+
 export function updateAvatar(avatar: any) {
     return post('/main/user/update/avatar', avatar)
 }

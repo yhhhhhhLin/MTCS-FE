@@ -622,6 +622,7 @@ function handlerCreateSubmit(data) {
         createOrUpdateOkLoading.value = false
       })
       .catch((err) => {
+        createOrUpdateOkLoading.value = false
         Message.error('创建接口失败')
         console.log(err)
       })

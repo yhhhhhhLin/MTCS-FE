@@ -6,8 +6,9 @@
           <a-card>
             <div class="profile-header-card">
               <div class="profile-header-avatar">
-                <a-avatar :size="84" :image-url="userInfoStore.user.avaData">Arco</a-avatar>
-
+                <a-avatar :size="84" >
+                  <img :src="userAvaData" alt="">
+                </a-avatar>
               </div>
               <div class="profile-header-other">
                 <div class="profile-header-title">
@@ -99,18 +100,20 @@
 <script setup lang="ts">
 
 import Container from "../../components/Container.vue";
-import {onMounted, reactive} from "vue";
+import {onMounted, reactive, ref} from "vue";
 import router from "../../router";
 import {Message} from "@arco-design/web-vue";
-import {getUserProfile} from "../../services/user";
+import {getAvatarPath, getUserProfile} from "../../services/user";
 import {getInterfaceBusinessList} from "../../services/interfaceInfo";
 import {useUserInfoStore} from "../../store/userInfo.ts";
+import instance from "../../request/instance.ts";
 
 
 
-const pageOptions = reactive({page: 1, size: 10})
+const pageOptions = reactive({page: 1, size: 50})
 const interfaceList = reactive<API.InterfaceInfoVO[]>([])
 const userInfoStore = useUserInfoStore()
+const userAvaData = ref<string>('')
 
 
 async function handlerGetUserProfile(userAccount) {
@@ -153,9 +156,24 @@ async function handlerGetInterfaceBusinessList(userId: number, type: string) {
   }
 }
 
+async function getUserAvatar(userId:number){
+  instance.get(getAvatarPath, {responseType: 'arraybuffer',params: {userId: userId}})
+      .then(response => {
+        const base64Image = btoa(
+            new Uint8Array(response.data)
+                .reduce((data, byte) => data + String.fromCharCode(byte), '')
+        );
+        userAvaData.value = `data:${response.headers['content-type']};base64,${base64Image}`;
+      })
+      .catch(error => {
+        console.error('出错', error);
+      });
+}
+
 async function fetchData(userAccount) {
   await handlerGetUserProfile(userAccount);
   await handlerGetInterfaceBusinessList(userProfile.id, 'interface');
+  await getUserAvatar(userProfile.id);
 }
 
 const userProfile = reactive<API.UserProfileVO>({});

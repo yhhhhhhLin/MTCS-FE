@@ -81,6 +81,8 @@ declare namespace API {
         pointsRequired: number
         status: number,
         userId: string,
+        userAccount: string,
+        userName: string,
         createTime: Date,
         updateTime: Date,
         allNum: number,

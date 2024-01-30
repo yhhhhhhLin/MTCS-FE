@@ -12,6 +12,9 @@
                   <span v-else>不可用</span>
 
                 </div>
+                <div v-else-if="item.label==='发布者'">
+                  <a-link @click="handlerPushToUserInfo">{{interfaceDrawerDetail[item.dataIndex] ?? '无' }}</a-link>
+                </div>
                 <span v-else>{{ interfaceDrawerDetail[item.dataIndex] ?? '无' }}</span>
               </a-descriptions-item>
             </a-descriptions>
@@ -161,10 +164,15 @@ const interfaceInfoDrawerColumns = [
     span: 2
   },
   {
-    label: '创建时间',
-    dataIndex: 'createTime',
+    label: '发布者',
+    dataIndex: 'userName',
     span: 1
   },
+  {
+    label: '创建时间',
+    dataIndex: 'createTime',
+    span: 2
+  }
 ];
 const interfaceDrawerDetail = reactive({
   name: '',
@@ -181,6 +189,8 @@ const interfaceDrawerDetail = reactive({
   allNum: 0,
   remNum: 0,
   credits: 0,
+  userAccount: '',
+  userName: '',
   pointsRequired: 0,
 })
 const testResult = ref('')
@@ -215,6 +225,8 @@ onMounted(() => {
           interfaceDrawerDetail.responseHeader = res.data.responseHeader
           interfaceDrawerDetail.allNum = res.data.allNum
           interfaceDrawerDetail.pointsRequired = res.data.pointsRequired
+          interfaceDrawerDetail.userAccount = res.data.userAccount
+          interfaceDrawerDetail.userName = res.data.userName
           getRemNumAndCredits()
         } else {
           Message.error(res.message)
@@ -270,6 +282,10 @@ function getFreeNum() {
 
 const handleDelete = (index) => {
   testParams.getRequestParams.splice(index, 1)
+}
+
+function handlerPushToUserInfo(){
+  router.push('/user/'+interfaceDrawerDetail.userAccount)
 }
 
 </script>

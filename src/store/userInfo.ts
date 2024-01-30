@@ -46,7 +46,7 @@ export const useUserInfoStore = defineStore('user', () => {
             // TODO 设置实际未读消息数量
             user.unReadMsgCount = 9
 
-            instance.get(getAvatarPath, {responseType: 'arraybuffer'})
+            instance.get(getAvatarPath, {responseType: 'arraybuffer',params: {userId: user.id}})
                 .then(response => {
                     const base64Image = btoa(
                         new Uint8Array(response.data)

@@ -40,9 +40,20 @@
               <div class="info-item">
                 <div class="info-item-key">用户名字：</div>
                 <div class="info-item-blank"></div>
-                <div class="info-item-value">{{ userInfoStore.user.userName }}</div>
-                <div class="info-item-opt" @click="handlerUpdateUserName">
-                  <icon-edit />修改
+                <div v-if="!isEditName">
+                  <div class="info-item-value-opt">
+                    <div class="info-item-value">{{ userInfoStore.user.userName }}</div>
+                    <div class="info-item-opt" @click="handlerUpdateUserName">
+                      <icon-edit />修改
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="item-input-and-btn">
+                  <a-input :style="{width:'320px'}" :default-value="userInfoStore.user.userName" v-model="userInfo.userName" placeholder="请输入要求改的名字" allow-clear />
+                  <div class="btns">
+                    <a-button @click="handlerEditNameSubmit">提交</a-button>
+                    <a-button @click=handlerEditNameCancel>取消</a-button>
+                  </div>
                 </div>
               </div>
               <div class="info-item">
@@ -53,9 +64,24 @@
               <div class="info-item">
                 <div class="info-item-key">性别：</div>
                 <div class="info-item-blank"></div>
-                <div class="info-item-value">{{ userInfoStore.user.gender }}</div>
-                <div class="info-item-opt" @click="handlerUpdateUserGender">
-                  <icon-edit />修改
+
+                <div v-if="!isEditGender">
+                  <div class="info-item-value-opt">
+                    <div class="info-item-value">
+                      <div v-if="userInfoStore.user.gender === 0" >男</div>
+                      <div v-if="userInfoStore.user.gender === 1" >女</div>
+                    </div>
+                    <div class="info-item-opt" @click="handlerUpdateUserGender">
+                      <icon-edit />修改
+                    </div>
+                  </div>
+                </div>
+                <div v-else class="item-input-and-btn">
+                  <a-radio-group v-model="userInfo.gender" :options="genderOptions"/>
+                  <div class="btns">
+                    <a-button @click="handlerEditGenderSubmit">提交</a-button>
+                    <a-button @click=handlerEditGenderCancel>取消</a-button>
+                  </div>
                 </div>
               </div>
               <div class="info-item">
@@ -100,12 +126,25 @@
 
 import Container from "../../components/Container.vue";
 import {onMounted, reactive, ref} from "vue";
-import {refreshAkSk, updateAvatar} from "../../services/user";
+import {refreshAkSk, updateAvatar, updateUserInfo} from "../../services/user";
 import {useUserInfoStore} from "../../store/userInfo.ts";
 import {Message} from "@arco-design/web-vue";
 
 const userInfoStore = useUserInfoStore()
 const userInfo = reactive<API.UserInfo>({});
+const isEditName  = ref(false)
+const isEditGender  = ref(false)
+
+const genderOptions = [
+  {
+    label: "男",
+    value: "0",
+  },
+  {
+    label: "女",
+    value: "1",
+  },
+];
 
 
 onMounted(()=>{
@@ -128,18 +167,70 @@ function handleFileChange(event) {
   if (file) {
     const formData = new FormData();
     formData.append("file", file);
-    updateAvatar(formData);
-    console.log(formData);
+    updateAvatar(formData).then((resp)=>{
+      if (!resp.code) {
+        userInfoStore.updateUserInfo()
+        Message.success('更新头像成功')
+      }else{
+        Message.error(resp.message)
+      }
+    }).catch((resp)=>{
+      Message.error('更新头像出错')
+      console.log(resp)
+    })
   }
 }
 
 function handlerUpdateUserName(){
-  Message.info('修改名字（暂未实现）')
+  isEditName.value = true
+}
+
+function handlerEditNameSubmit(){
+  isEditName.value = false
+  // 更新用户信息
+  updateUserInfo({userName:userInfo.userName}).then((resp)=>{
+    if (!resp.code) {
+      userInfoStore.updateUserInfo()
+      Message.success('修改名字成功')
+    }else{
+      Message.error(resp.message)
+    }
+  }).catch((resp=>{
+    Message.error('修改名字出错')
+    console.log(resp)
+  }))
+}
+
+function handlerEditNameCancel(){
+  isEditName.value = false
+  userInfo.userName = userInfoStore.user.userName
 }
 
 function handlerUpdateUserGender(){
-  Message.info('修改性别（暂未实现）')
+  isEditGender.value=true
 }
+function handlerEditGenderSubmit(){
+  isEditGender.value = false
+  // 更新用户信息
+  updateUserInfo({gender:userInfo.gender}).then((resp)=>{
+    if (!resp.code) {
+      userInfoStore.updateUserInfo()
+      Message.success('修改性别成功')
+    }else{
+      Message.error(resp.message)
+    }
+  }).catch((resp=>{
+    Message.error('修改性别出错')
+    console.log(resp)
+  }))
+}
+
+function handlerEditGenderCancel(){
+  isEditGender.value = false
+  userInfo.gender = userInfoStore.user.gender
+}
+
+
 
 function handlerRefreshUserAccessKeyAndSecretKey(){
   refreshAkSk().then((resp)=>{
@@ -222,6 +313,20 @@ function handlerRefreshUserAccessKeyAndSecretKey(){
   color: #409EFF;
   cursor: pointer;
   font-family: SimSun;
+}
+
+.info-item-value-opt{
+  display: flex;
+  gap: 10px;
+}
+
+.item-input-and-btn{
+  display: flex;
+  gap: 20px;
+  .btns{
+    display: flex;
+    gap: 10px;
+  }
 }
 
 
