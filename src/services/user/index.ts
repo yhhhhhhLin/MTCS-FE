@@ -29,3 +29,7 @@ export function updateAvatar(avatar: any) {
 export function refreshAkSk(){
     return get('/main/user/updateak')
 }
+
+export function getVisitData(){
+    return get('/main/visit')
+}

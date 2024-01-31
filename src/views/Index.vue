@@ -76,7 +76,7 @@
         <div class="right-content">
           <div class="right-top">
             <a-card>
-              总访问量:120
+              总请求次数: {{allVisitTotal}}
               <div ref="chart" id="chart" style="width: 100%; height: 250px;"></div>
 
             </a-card>
@@ -100,45 +100,70 @@
 
 <script setup lang="ts">
 import {useUserInfoStore} from "../store/userInfo.ts";
-import {onMounted} from 'vue';
+import {onMounted, ref} from 'vue';
 import Container from "../components/Container.vue";
 import * as echarts from 'echarts';
+import {getVisitData} from "../services/user";
 
-// TODO 模拟数据
 const chartData = {
-  labels: ['2023-12-29','2023-12-30','2024-01-01', '2024-01-02', '2024-01-03', '2024-01-04', '2024-01-05'],
-  series: [10,10,15, 20, 18, 25, 22],
+  labels: [],
+  series: [],
 };
 
+const allVisitTotal = ref(0)
+
 onMounted(() => {
-  // TODO 发送一个计数请求给后端
   const myChart = echarts.init(document.getElementById('chart'));
+  getVisitData().then((resp)=>{
+    // 遍历resp.data这个map
+
+    if(!resp.code){
+      // 获取成功
+      const data = resp.data
+      allVisitTotal.value = resp.data.total
+      console.log(data.visitResultVos)
+      data.visitResultVos.forEach((item)=>{
+        chartData.labels.push(item.date)
+        chartData.series.push(item.pv)
+      })
+
+      console.log(chartData)
+
+      const option = {
+        xAxis: {
+          type: 'category',
+          data: chartData.labels,
+        },
+        yAxis: {
+          type: 'value',
+          name: '访问量',
+        },
+        series: [{
+          data: chartData.series,
+          type: 'line',
+          smooth: true,
+        }],
+      };
+
+      myChart.setOption(option);
+
+    }else{
+      // 获取失败
+    }
+  }).catch((resp)=>{
+    console.log(resp)
+  }).finally(()=>{
+    // 发送计数请求
+  })
 
 
-  const option = {
-    xAxis: {
-      type: 'category',
-      data: chartData.labels,
-    },
-    yAxis: {
-      type: 'value',
-      name: '访问量',
-    },
-    series: [{
-      data: chartData.series,
-      type: 'line',
-      smooth: true,
-    }],
-  };
 
-  myChart.setOption(option);
 });
 
 const userinfoStore = useUserInfoStore()
 
 function loginHandler() {
   const user = userinfoStore.user;
-  console.log(user)
 }
 
 
