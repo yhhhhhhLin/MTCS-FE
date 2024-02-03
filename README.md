@@ -2,7 +2,7 @@
 
 MTCS (MultiTech Creative System) 使用vue3+vite+router-pinia-[arco-design](https://arco.design/)+[v-md-editor](https://code-farmer-i.github.io/vue-markdown-editor/zh/)等等组件组件进行编写。
 
-> 开发日志: 
+> 开发日志: [前端开发日志](https://iakbbhkfqkz.feishu.cn/wiki/GjTbwTDCBiPtfqkC9uCcIWDEnkj?from=from_copylink)
 
 ## 实现功能
 - [x] 登录
