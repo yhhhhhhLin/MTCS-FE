@@ -20,6 +20,27 @@ MTCS (MultiTech Creative System) 使用vue3+vite+router-pinia-[arco-design](http
 ## 页面展示
 
 ### 登录页面
-![image](https://github.com/yhhhhhhLin/MTCS-FE/tree/master/public/mdImg/login.png)
+![image](./public/mdImg/login.png)
+### 首页展示页面
+![image](./public/mdImg/index.png)
+### 用户信息展示页面
+![image](./public/mdImg/userInfo.png)
+### 编辑资料页面
+![image](./public/mdImg/editInfo.png)
+### 接口广场页面
+![image](./public/mdImg/interfaceSquare.png)
+### 接口详细页面
+![image](./public/mdImg/interfaceDetail.png)
+### 我发布的接口页面
+![image](./public/mdImg/selfInterface.png)
+#### 详细
+![image](./public/mdImg/selfInterfaceDetail.png)
+#### 新增
+![image](./public/mdImg/selfInterfaceAdd.png)
 
-前端展示所有接口和接口详细信息等等页面
+### gpt页面
+![image](./public/mdImg/gpt.png)
+
+### 审核页面
+![image](./public/mdImg/audit.png)
+
