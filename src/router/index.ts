@@ -56,6 +56,16 @@ export const routes: any = [
             icon: "icon-list"
         }
     },
+    {
+        path: '/credit/square',
+        name: '购买积分',
+        component: () => import('../views/credit/Square.vue'),
+        meta: {
+            // 是否保存到菜单栏
+            fixedNav: true,
+            icon: "icon-gift"
+        }
+    },
 
     {
         path: '/myInterface',
