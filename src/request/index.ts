@@ -19,7 +19,12 @@ export async function del<T>(url: string, params?: any): Promise<API.BaseRespons
     return resp.data
 }
 
-export async function postDefault(url: string, data?: any,params?: any): Promise<any> {
+export async function postDefault<T>(url: string, data?: any,params?: any): Promise<T> {
     const resp = await instance.post(url, data, {params})
     return resp.data
+}
+
+export async function getDefault(url: string,params?: any): Promise<any> {
+    return await instance.get(url, {params})
+
 }

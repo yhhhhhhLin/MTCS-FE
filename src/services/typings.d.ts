@@ -30,6 +30,14 @@ declare namespace API {
         credits: number
     }
 
+    type CreditProduct = {
+        id: string
+        description: string
+        price: number
+        integral: number
+        picture: string
+    }
+
 
     type GptMessageInfo = {
         role: string
@@ -142,5 +150,27 @@ declare namespace API {
         createTime: Date;
         updateTime: Date;
         allNum: number;
+    }
+
+    export class CreateCreditOrderDto {
+        productId : number;
+        num : number
+        payType : number
+    }
+
+    export class CreditOrder {
+        id: number;
+        orderNo: string;
+        userId: number;
+        productId: number;
+        orderName: string;
+        total: number;
+        status: string;
+        payType: number;
+        productInfo: string;
+        addPoints: number;
+        expirationTime: number;
+        createTime: number;
+        updateTime: number;
     }
 }
