@@ -71,28 +71,28 @@
             <span>商品单价： {{ nowCreditProduct?.price }}</span>
           </div>
 
-        <div class="order-confirmed-body-pay-type">
-          支付方式：
-          <a-radio-group v-model="nowPayType">
-            <a-radio value="1">
-              <div class="order-confirmed-body-pay-type-img">
-                <img src="../../assets/alpayImg.png" style="width: 100px;height: 100px" alt="支付宝支付">
-              </div>
-            </a-radio>
-            <a-radio value="2" disabled>
-              <div class="order-confirmed-body-pay-type-img">
-                <img src="../../assets/wechatImg.png" style="width: 100px;height: 100px" alt="微信支付">
-              </div>
-            </a-radio>
-          </a-radio-group>
+          <div class="order-confirmed-body-pay-type">
+            支付方式：
+            <a-radio-group v-model="nowPayType">
+              <a-radio value="1">
+                <div class="order-confirmed-body-pay-type-img">
+                  <img src="../../assets/alpayImg.png" style="width: 100px;height: 100px" alt="支付宝支付">
+                </div>
+              </a-radio>
+              <a-radio value="2" disabled>
+                <div class="order-confirmed-body-pay-type-img">
+                  <img src="../../assets/wechatImg.png" style="width: 100px;height: 100px" alt="微信支付">
+                </div>
+              </a-radio>
+            </a-radio-group>
 
-          <a-divider type="vertical"/>
-          <span>
+            <a-divider type="vertical"/>
+            <span>
             微信支付
           </span>
 
 
-        </div>
+          </div>
 
           <div class="order-confirmed-body-end">
             <div class="order-confirmed-body-num">
@@ -107,7 +107,7 @@
             </div>
 
             <div class="order-confirmed-body-total">
-              总价：￥{{ nowCreditProduct?.price * nowCreditProductNum}}
+              总价：￥{{ nowCreditProduct?.price * nowCreditProductNum }}
             </div>
 
           </div>
@@ -136,6 +136,8 @@ const creditProductOrderVisible = ref(false)
 const nowCreditProduct = ref<API.CreditProduct>(null)
 const nowCreditProductNum = ref(1)
 const nowPayType = ref(1)
+const paymentFormHtml = ref('');
+
 
 onMounted(() => {
   // 获取所有的积分商品
@@ -154,28 +156,32 @@ function showOrderModal() {
   nowCreditProductNum.value = 1
   creditProductOrderVisible.value = true
 }
-
 function handlerOrderSubmit() {
   creditProductOrderVisible.value = false
-  createCreditProductOrder({productId:checkCredit.value,num:nowCreditProductNum.value,payType: nowPayType.value})
+  createCreditProductOrder({productId: checkCredit.value, num: nowCreditProductNum.value, payType: nowPayType.value})
       .then(res => {
         // 返回订单号后，需要创建支付
-        if(!res.code){
+        if (!res.code) {
           Message.info("正在跳转到支付地址中...")
-          payCreditProductOrder({orderNum: res.data.orderNo,type: nowPayType.value}).then((res)=>{
-            console.log(res)
+          payCreditProductOrder({orderNum: res.data.orderNo, type: nowPayType.value}).then((res) => {
+            console.log("后端返回的html代码"+res.data)
+
+
           }).catch(err => {
+            Message.error("出错了")
             Message.error(err)
           })
 
-        }else{
+        } else {
           Message.error(res.message)
         }
       }).catch(err => {
-        console.log(err)
+    console.log(err)
   })
 
 }
+
+
 
 function handleOrderCancel() {
   creditProductOrderVisible.value = false
@@ -280,27 +286,28 @@ function handleOrderCancel() {
   margin: 0 70px;
 }
 
-.order-confirmed-body{
+.order-confirmed-body {
   display: flex;
   flex-direction: column;
   gap: 10px;
 }
 
-.order-confirmed-body-pay-type-img{
+.order-confirmed-body-pay-type-img {
   display: flex;
   flex-direction: column;
 }
 
-.order-confirmed-body-num-title{
+.order-confirmed-body-num-title {
   font-size: 20px;
   font-weight: bold;
 }
 
-.order-confirmed-body-end{
+.order-confirmed-body-end {
   display: flex;
   gap: 10px;
   justify-content: end;
-  .order-confirmed-body-total{
+
+  .order-confirmed-body-total {
     display: flex;
     align-items: end;
   }
