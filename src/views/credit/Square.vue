@@ -50,8 +50,6 @@
           </div>
 
         </div>
-
-
       </a-card>
 
       <a-modal v-model:visible="creditProductOrderVisible"
@@ -90,8 +88,6 @@
             <span>
             微信支付
           </span>
-
-
           </div>
 
           <div class="order-confirmed-body-end">
@@ -113,6 +109,7 @@
           </div>
         </div>
       </a-modal>
+
 
     </template>
 
@@ -136,11 +133,10 @@ const creditProductOrderVisible = ref(false)
 const nowCreditProduct = ref<API.CreditProduct>(null)
 const nowCreditProductNum = ref(1)
 const nowPayType = ref(1)
-const paymentFormHtml = ref('');
+const alipayForm = ref('')
 
 
 onMounted(() => {
-  // 获取所有的积分商品
   getCreditProductList().then(res => {
     creditProducts.push(...res.data)
   })
@@ -156,6 +152,7 @@ function showOrderModal() {
   nowCreditProductNum.value = 1
   creditProductOrderVisible.value = true
 }
+
 function handlerOrderSubmit() {
   creditProductOrderVisible.value = false
   createCreditProductOrder({productId: checkCredit.value, num: nowCreditProductNum.value, payType: nowPayType.value})
@@ -164,13 +161,29 @@ function handlerOrderSubmit() {
         if (!res.code) {
           Message.info("正在跳转到支付地址中...")
           payCreditProductOrder({orderNum: res.data.orderNo, type: nowPayType.value}).then((res) => {
-            console.log("后端返回的html代码"+res.data)
-
-
-          }).catch(err => {
-            Message.error("出错了")
-            Message.error(err)
-          })
+            // 将里面的html代码通过正则表达式抽出来
+            const formRegex = /<form[\s\S]*?<\/form>/;
+            const match = res.data.match(formRegex);
+            if (match && match[0]) {
+              let htmlCode = match[0];
+              document.body.innerHTML += htmlCode; // 将表单元素添加到body中
+              try {
+                // 假设你的表单有一个name属性"punchout_form" 可以用这个name查找
+                let forms = document.getElementsByName('punchout_form');
+                if(forms.length > 0) {
+                  forms[0].submit(); // 提交表单
+                }else{
+                  console.log('没有找到名为punchout_form的form表单');
+                }
+              } catch (e) {
+                console.log('出错了，错误为：'+ e.message);
+              }
+            } else {
+              console.log('没有匹配到form表单的正则表达式');
+            }
+          }).catch(error => {
+            console.log('请求失败或其他错误', error);
+          });
 
         } else {
           Message.error(res.message)
@@ -180,7 +193,6 @@ function handlerOrderSubmit() {
   })
 
 }
-
 
 
 function handleOrderCancel() {
