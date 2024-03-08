@@ -22,7 +22,7 @@
                           {{ creditProduct.description }}
                         </div>
                         <div class="credit-product-item-title-price">
-                          ￥ {{ creditProduct.price }}
+                          ￥ {{ creditProduct.price/100 }}
                         </div>
                       </div>
                       <a-typography-text type="secondary">
@@ -66,7 +66,7 @@
           </div>
 
           <div class="order-confirmed-body-price">
-            <span>商品单价： {{ nowCreditProduct?.price }}</span>
+            <span>商品单价： {{ nowCreditProduct?.price/100 }}</span>
           </div>
 
           <div class="order-confirmed-body-pay-type">
@@ -103,7 +103,7 @@
             </div>
 
             <div class="order-confirmed-body-total">
-              总价：￥{{ nowCreditProduct?.price * nowCreditProductNum }}
+              总价：￥{{ nowCreditProduct?.price/100 * nowCreditProductNum }}
             </div>
 
           </div>

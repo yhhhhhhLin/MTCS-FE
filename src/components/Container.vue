@@ -26,6 +26,7 @@
                 <a-divider margin="0"/>
                 <div class="avatar-box-opt">
                   <a-doption @click="handlerPushToUserInfo()">个人中心</a-doption>
+                  <a-doption @click="handlerPushToMyOrder()">我的订单</a-doption>
                   <a-doption @click="Message.info('暂未实现')">获取sdk</a-doption>
                   <a-divider margin="0"/>
                   <a-doption @click="logoutHandler">退出登录</a-doption>
@@ -99,6 +100,11 @@ onMounted(() => {
 
 function handlerPushToUserInfo(){
   router.push('/user/'+userinfoStore.user.userAccount)
+}
+
+function handlerPushToMyOrder(){
+  Message.info('暂未实现')
+  // router.push('/user/myOrder')
 }
 
 

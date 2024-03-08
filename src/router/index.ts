@@ -42,6 +42,11 @@ export const routes: any = [
         component: () => import('../views/user/UserInfo.vue'),
     },
     {
+        path: '/user/myOrder',
+        name: '我的订单',
+        component: () => import('../views/user/MyOrder.vue'),
+    },
+    {
         path: '/user/updateInfo',
         name: '更新用户信息',
         component: () => import('../views/user/UpdateInfo.vue'),
@@ -99,9 +104,9 @@ export const routes: any = [
         children: adminRouter
     },
     {
-      path: '/interface/detail/:id',
-      name: '接口详情',
-      component: () => import('../views/interface/Detail.vue'),
+        path: '/interface/detail/:id',
+        name: '接口详情',
+        component: () => import('../views/interface/Detail.vue'),
     },
     {
         path: '/login',
