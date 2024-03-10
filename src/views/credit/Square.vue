@@ -101,15 +101,13 @@
                               :default-value="1"
                               class="input-demo"/>
             </div>
-
             <div class="order-confirmed-body-total">
-              总价：￥{{ nowCreditProduct?.price/100 * nowCreditProductNum }}
+              总价：￥{{ (nowCreditProduct?.price/100 * nowCreditProductNum).toFixed(2) }}
             </div>
 
           </div>
         </div>
       </a-modal>
-
 
     </template>
 
@@ -125,6 +123,7 @@ import Container from "../../components/Container.vue";
 import {onMounted, reactive, ref} from "vue";
 import {createCreditProductOrder, getCreditProductList, payCreditProductOrder} from "../../services/creditProducts";
 import {Message} from "@arco-design/web-vue";
+import {stringify} from "postcss";
 
 const checkCredit = ref(0);
 
