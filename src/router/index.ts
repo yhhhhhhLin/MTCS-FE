@@ -37,6 +37,15 @@ export const routes: any = [
         }
     },
     {
+        path: '/gen',
+        name: '代码生成',
+        component: () => import('../views/generator/Index.vue'),
+        meta: {
+            fixedNav: true,
+            icon: "icon-pen-fill"
+        }
+    },
+    {
         path: '/user/:account',
         name: '用户信息',
         component: () => import('../views/user/UserInfo.vue'),

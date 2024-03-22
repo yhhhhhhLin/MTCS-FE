@@ -152,6 +152,34 @@ declare namespace API {
         allNum: number;
     }
 
+
+    type genModelInfo = {
+        id: number
+        infoName: string
+        infoDesc: string
+        fieldName: string
+    }
+
+    type DataModel = {
+        needPostExample: boolean;
+        needUserExample: boolean;
+        groupName: string;
+        artifactName: string;
+        projectName: string;
+        needCors: boolean;
+        needBootWeb: boolean;
+        needBootAop: boolean;
+        needMybatisPlus: boolean;
+        needMybatis: boolean;
+        needMysql: boolean;
+        needRedis: boolean;
+        needGson: boolean;
+        needFastJson: boolean;
+        needHutool: boolean;
+        needKnife4j: boolean;
+        needLombok: boolean;
+    }
+
     export class CreateCreditOrderDto {
         productId : number;
         num : number
