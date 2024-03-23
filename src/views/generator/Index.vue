@@ -5,15 +5,15 @@
         <div class="gen-title">springBoot项目初始化脚手架</div>
         <div class="project-name-div">
           <div class="project-name-title">
-            <h3>项目名字  </h3>
+            <h3>authorName:</h3>
           </div>
           <div class="project-name-input">
-            <input type="text" placeholder="请输入项目名称" class="underline" v-model="dataModel.projectName">
+            <input type="text" placeholder="作者名字" class="underline" v-model="dataModel.authorName">
           </div>
         </div>
         <div class="project-group-div">
           <div class="project-group-title">
-            <h3>项目Group</h3>
+            <h3>项目Group:</h3>
           </div>
           <!--          下划线输入框-->
 
@@ -23,7 +23,7 @@
         </div>
         <div class="project-artifact-div">
           <div class="project-artifact-title">
-            <h3>项目artifact</h3>
+            <h3>项目artifact:</h3>
           </div>
           <div class="project-artifact-input">
             <input type="text" placeholder="请输入项目artifact" class="underline" v-model="dataModel.artifactName">
@@ -142,11 +142,13 @@
 
 import Container from "../../components/Container.vue";
 import {reactive, ref} from "vue";
+import {genProject} from "../../services/gen";
 
 const checkDependency = ref<String[]>([])
 const checkOther = ref<String[]>([])
 const dependencyList = ref(false)
 const otherList = ref(false)
+import { saveAs } from 'file-saver';
 
 const dependencyInfos = reactive<API.genModelInfo[]>([
   {id: 1 ,infoName: "SpringBoot-web",infoDesc: "springBoot-web的依赖，包含springBoot-web和test",fieldName:"needBootWeb"},
@@ -168,11 +170,29 @@ const otherInfos = reactive<API.genModelInfo[]>([
   {id: 3, infoName: "cors配置文件",infoDesc:"跨域配置文件",fieldName: "needCors"},
 ])
 
-const dataModel = reactive<API.DataModel>({artifactName: "backed",groupName:"shop.linyh",projectName: "backed-template"})
+const dataModel = reactive<API.DataModel>({artifactName: "backed",groupName:"shop.linyh"})
 
 function handlerGen() {
-  console.log(dataModel)
+  genProject(dataModel).then((resp)=>{
+    // 创建一个新的Blob对象，使用从后端收到的数据
+    let filename = dataModel.artifactName+".zip";
+    _customDownLoadZipGet(resp.data, filename);
+  }).catch((err)=>{
+    console.log("发送失败"+err)
+  })
 }
+const _customDownLoadZipGet = (data, fileName) => {
+  const blob = new Blob([data]);
+  const downloadElement = document.createElement("a");
+  const href = window.URL.createObjectURL(blob);
+  //后台再header中传文件名
+  downloadElement.href = href;
+  downloadElement.download = fileName;
+  document.body.appendChild(downloadElement);
+  downloadElement.click();
+  document.body.removeChild(downloadElement); // 下载完成移除元素
+  window.URL.revokeObjectURL(href); // 释放掉blob对象
+};
 
 
 </script>

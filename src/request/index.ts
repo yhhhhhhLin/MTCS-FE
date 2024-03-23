@@ -24,6 +24,11 @@ export async function postDefault<T>(url: string, data?: any,params?: any): Prom
     return resp.data
 }
 
+export async function postReturnBlob(url: string, data?: any) {
+    const resp = await instance.post(url, data,  {responseType: 'blob'})
+    return resp
+}
+
 export async function getDefault(url: string,params?: any): Promise<any> {
     return await instance.get(url, {params})
 

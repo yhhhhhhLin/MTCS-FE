@@ -166,6 +166,7 @@ declare namespace API {
         groupName: string;
         artifactName: string;
         projectName: string;
+        authorName: string;
         needCors: boolean;
         needBootWeb: boolean;
         needBootAop: boolean;
