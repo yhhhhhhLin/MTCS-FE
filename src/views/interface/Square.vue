@@ -108,7 +108,8 @@ function openInterfaceDetail(id:number){
 .interface-square-card{
   width: 250px;
   height: 150px;
-
+  overflow: hidden;
+  word-wrap: break-word;
 }
 
 
