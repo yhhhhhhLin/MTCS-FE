@@ -20,7 +20,7 @@
     "unplugin-vue-components": "^0.26.0",
     "vue": "^3.3.11",
     "vue-router": "4",
-    "yarn": "^1.22.21"
+    "yarn": "^1.22.22"
   },
   "devDependencies": {
     "@arco-design/web-vue": "^2.54.2",
